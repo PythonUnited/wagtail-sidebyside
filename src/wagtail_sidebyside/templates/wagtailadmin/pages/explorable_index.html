@@ -1,0 +1,12 @@
+{% extends "wagtailadmin/pages/explorable_index.html" %}
+{% load sidebyside_tags %}
+{% comment %}
+Adds the translation row below the header of the page explorer, to switch to
+the same page in another language. Extends Wagtail's own template (recursive
+extends), so only this block is ours.
+{% endcomment %}
+
+{% block header %}
+    {{ block.super }}
+    {% translation_bar parent_page mode="explore" %}
+{% endblock %}

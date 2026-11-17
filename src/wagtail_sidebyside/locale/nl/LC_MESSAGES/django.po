@@ -1,0 +1,633 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-17 09:28-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: action_menu.py:18
+msgid "Publish source and translation"
+msgstr "Bron en vertaling publiceren"
+
+#: action_menu.py:23
+msgid "Publish translation only"
+msgstr "Alleen vertaling publiceren"
+
+#: models.py:39
+msgid "machine translation"
+msgstr "automatisch vertalen"
+
+#: models.py:41
+msgid "Show the buttons to translate with AI."
+msgstr "Toon de knoppen om met AI te vertalen."
+
+#: models.py:44
+msgid "glossary"
+msgstr "woordenlijst"
+
+#: models.py:47
+msgid ""
+"Terms that must always be translated the same way, one per line, e.g. "
+"'fromage = cheese'. With more languages: 'fromage = en: cheese | nl: kaas'."
+msgstr ""
+"Termen die altijd op dezelfde manier vertaald moeten worden, één per regel, "
+"bijv. 'fromage = cheese'. Met meer talen: 'fromage = en: cheese | nl: kaas'."
+
+#: models.py:53
+msgid "instructions"
+msgstr "instructies"
+
+#: models.py:56
+msgid ""
+"Extra instructions for the AI that apply to the whole site, one per line. "
+"Fixed translations of terms go in the glossary. Examples: 'Use a formal, "
+"factual tone.' or 'Use a friendly, informal tone with short sentences.' "
+"'Address the reader as you; in French always use vous.' 'Use British English"
+" spelling.' 'Keep product and place names as they are.' 'Write dates as 17 "
+"October 2026.'"
+msgstr ""
+"Extra instructies voor de AI die voor de hele site gelden, één per regel. "
+"Vaste vertalingen van termen horen in de woordenlijst. Voorbeelden: 'Use a "
+"formal, factual tone.' of 'Use a friendly, informal tone with short "
+"sentences.' 'Address the reader as you; in French always use vous.' 'Use "
+"British English spelling.' 'Keep product and place names as they are.' "
+"'Write dates as 17 October 2026.'"
+
+#: models.py:66
+msgid "monthly budget (USD)"
+msgstr "maandbudget (USD)"
+
+#: models.py:72
+msgid ""
+"Estimated cost of machine translation per month. When it is reached, the AI "
+"buttons are hidden until next month. Empty = no limit. The real bill is in "
+"the provider's console."
+msgstr ""
+"Geschatte kosten van automatisch vertalen per maand. Is het bereikt, dan "
+"zijn de AI-knoppen weg tot de volgende maand. Leeg = geen limiet. De echte "
+"factuur staat in de console van de aanbieder."
+
+#: models.py:79
+msgid "Connection"
+msgstr "Verbinding"
+
+#: models.py:87
+msgid "translations"
+msgstr "vertalingen"
+
+#: templates/sidebyside/create.html:4
+msgid "Create translation"
+msgstr "Vertaling aanmaken"
+
+#: templates/sidebyside/create.html:10
+#, python-format
+msgid ""
+"This page has no %(language)s version yet. It is created as a copy of the "
+"source page. Until you translate it, it shows the source text."
+msgstr ""
+"Deze pagina heeft nog geen vertaling voor %(language)s. Die wordt gemaakt "
+"als kopie van de bronpagina. Tot je hem vertaalt, toont hij de brontekst."
+
+#: templates/sidebyside/create.html:18
+#, python-format
+msgid "Create %(language)s translation"
+msgstr "Vertaling (%(language)s) aanmaken"
+
+#: templates/sidebyside/dashboard_panel.html:3
+#, python-format
+msgid "%(counter)s page needs translation work"
+msgid_plural "%(counter)s pages need translation work"
+msgstr[0] "%(counter)s pagina heeft vertaalwerk"
+msgstr[1] "%(counter)s pagina's hebben vertaalwerk"
+
+#: templates/sidebyside/dashboard_panel.html:19
+#: templates/sidebyside/includes/translation_bar.html:25
+msgid "All translations"
+msgstr "Alle vertalingen"
+
+#: templates/sidebyside/includes/object_preview.html:10
+msgid "No image"
+msgstr "Geen afbeelding"
+
+#: templates/sidebyside/includes/object_preview.html:10
+msgid "No document"
+msgstr "Geen document"
+
+#: templates/sidebyside/includes/translation_bar.html:4
+#: templates/sidebyside/overview.html:4 templates/sidebyside/overview.html:11
+#: wagtail_hooks.py:38
+msgid "Translations"
+msgstr "Vertalingen"
+
+#: templates/sidebyside/includes/translation_bar.html:9
+msgid "Choose a language"
+msgstr "Kies een taal"
+
+#: templates/sidebyside/includes/translation_bar_button.html:6
+msgid "Source"
+msgstr "Bron"
+
+#: templates/sidebyside/overview.html:15
+msgid "Show all pages"
+msgstr "Toon alle pagina's"
+
+#: templates/sidebyside/overview.html:17
+msgid "Only pages with work"
+msgstr "Alleen pagina's met werk"
+
+#: templates/sidebyside/overview.html:24
+msgid "Page"
+msgstr "Pagina"
+
+#: templates/sidebyside/overview.html:44
+msgid "All pages are translated."
+msgstr "Alle pagina's zijn vertaald."
+
+#: templates/sidebyside/translate.html:4
+#, python-format
+msgid "Translate %(title)s to %(language)s"
+msgstr "%(title)s vertalen naar %(language)s"
+
+#: templates/sidebyside/translate.html:29
+#, python-format
+msgid "%(done)s of %(total)s translated"
+msgstr "%(done)s van %(total)s vertaald"
+
+#: templates/sidebyside/translate.html:33
+msgid "All"
+msgstr "Alles"
+
+#: templates/sidebyside/translate.html:34
+#: templates/sidebyside/translate.html:156
+msgid "To do"
+msgstr "Te doen"
+
+#: templates/sidebyside/translate.html:35
+#: templates/sidebyside/translate.html:156
+msgid "Outdated"
+msgstr "Verouderd"
+
+#: templates/sidebyside/translate.html:36
+#: templates/sidebyside/translate.html:156
+msgid "To review"
+msgstr "Na te kijken"
+
+#: templates/sidebyside/translate.html:41
+msgid "AI budget for this month is used up."
+msgstr "Het AI-budget voor deze maand is op."
+
+#: templates/sidebyside/translate.html:44
+#: templates/sidebyside/translate.html:162
+msgid "Translating..."
+msgstr "Bezig met vertalen..."
+
+#: templates/sidebyside/translate.html:44
+msgid "Translate empty fields with AI"
+msgstr "Lege velden vertalen met AI"
+
+#: templates/sidebyside/translate.html:50
+msgid "This page is locked. You cannot save the translation."
+msgstr "Deze pagina is vergrendeld. Je kunt de vertaling niet opslaan."
+
+#: templates/sidebyside/translate.html:53
+msgid ""
+"The source page has unpublished changes. You are translating its latest "
+"draft. Use 'Publish source and translation' to put both live at once."
+msgstr ""
+"De bronpagina heeft ongepubliceerde wijzigingen. Je vertaalt het laatste "
+"concept. Gebruik 'Bron en vertaling publiceren' om beide tegelijk live te "
+"zetten."
+
+#: templates/sidebyside/translate.html:61
+#, python-format
+msgid "%(counter)s %(language)s text has no counterpart in the source page."
+msgid_plural ""
+"%(counter)s %(language)s texts have no counterpart in the source page."
+msgstr[0] ""
+"%(counter)s tekst (%(language)s) heeft geen tegenhanger in de bronpagina."
+msgstr[1] ""
+"%(counter)s teksten (%(language)s) hebben geen tegenhanger in de bronpagina."
+
+#: templates/sidebyside/translate.html:66
+msgid ""
+"The source page has changed (blocks removed or of another type). Saving "
+"moves these texts to 'Removed from the source' below. Until then, publishing"
+" the source does not publish this translation."
+msgstr ""
+"De bronpagina is gewijzigd (blokken verwijderd of van een ander type). Bij "
+"opslaan gaan deze teksten naar 'Verwijderd uit de bron' hieronder. Tot die "
+"tijd publiceert het publiceren van de bron deze vertaling niet mee."
+
+#: templates/sidebyside/translate.html:79
+#, python-format
+msgid "Removed from the source: %(counter)s translated text"
+msgid_plural "Removed from the source: %(counter)s translated texts"
+msgstr[0] "Verwijderd uit de bron: %(counter)s vertaalde tekst"
+msgstr[1] "Verwijderd uit de bron: %(counter)s vertaalde teksten"
+
+#: templates/sidebyside/translate.html:85
+msgid ""
+"Their block was removed from the source page. If a block with the same "
+"source text comes back, its translation is filled in again."
+msgstr ""
+"Het blok is uit de bronpagina gehaald. Komt er een blok met dezelfde "
+"brontekst terug, dan wordt de vertaling weer ingevuld."
+
+#: templates/sidebyside/translate.html:90
+msgid "Discard"
+msgstr "Weggooien"
+
+#: templates/sidebyside/translate.html:110
+msgid "Metadata"
+msgstr "Metadata"
+
+#: templates/sidebyside/translate.html:111
+msgid ""
+"The web address and what search engines show: the slug is the last part of "
+"the address, the title tag and meta description appear in search results."
+msgstr ""
+"Het webadres en wat zoekmachines tonen: de slug is het laatste deel van het "
+"adres, de title tag en meta description verschijnen in zoekresultaten."
+
+#: templates/sidebyside/translate.html:115
+msgid "Content"
+msgstr "Inhoud"
+
+#: templates/sidebyside/translate.html:122
+msgid "no text, copied from source"
+msgstr "geen tekst, overgenomen van de bron"
+
+#: templates/sidebyside/translate.html:128
+#: templates/sidebyside/translate.html:156
+msgid "Same as source"
+msgstr "Gelijk aan bron"
+
+#: templates/sidebyside/translate.html:128
+msgid "Different image"
+msgstr "Andere afbeelding"
+
+#: templates/sidebyside/translate.html:128
+msgid "Different document"
+msgstr "Ander document"
+
+#: templates/sidebyside/translate.html:139
+msgid "Use a different image in this language"
+msgstr "Andere afbeelding gebruiken in deze taal"
+
+#: templates/sidebyside/translate.html:139
+msgid "Use a different document in this language"
+msgstr "Ander document gebruiken in deze taal"
+
+#: templates/sidebyside/translate.html:153
+msgid "AI, not saved"
+msgstr "AI, niet opgeslagen"
+
+#: templates/sidebyside/translate.html:156
+msgid "Empty in source"
+msgstr "Leeg in bron"
+
+#: templates/sidebyside/translate.html:156
+msgid "Previous translation, to review"
+msgstr "Eerdere vertaling, na te kijken"
+
+#: templates/sidebyside/translate.html:156
+msgid "Done"
+msgstr "Klaar"
+
+#: templates/sidebyside/translate.html:160
+msgid "Copy the source text into the translation"
+msgstr "Brontekst naar de vertaling kopiëren"
+
+#: templates/sidebyside/translate.html:162
+msgid "Translate this field with AI"
+msgstr "Dit veld vertalen met AI"
+
+#: templates/sidebyside/translate.html:185
+msgid "Empty in the source"
+msgstr "Leeg in de bron"
+
+#: templates/sidebyside/translate.html:188
+msgid "Source text is used"
+msgstr "Brontekst wordt gebruikt"
+
+#: templates/sidebyside/translate.html:195
+msgid "Source changed:"
+msgstr "Bron gewijzigd:"
+
+#: templates/sidebyside/translate.html:199
+msgid "Translation is still correct"
+msgstr "Vertaling klopt nog"
+
+#: templates/sidebyside/translate.html:206
+msgid "Same in both languages (keep the source text)"
+msgstr "Gelijk in beide talen (brontekst houden)"
+
+#: templates/sidebyside/translate.html:212
+msgid "Checked: the translation is correct"
+msgstr "Gecontroleerd: de vertaling klopt"
+
+#: templates/sidebyside/translate.html:222
+msgid "Actions (footer)"
+msgstr "Acties (voettekst)"
+
+#: templates/sidebyside/translators/claude_status.html:5
+msgid ""
+"Machine translation with Claude needs the anthropic package, so no AI "
+"buttons are shown."
+msgstr ""
+"Automatisch vertalen met Claude heeft het anthropic-package nodig, dus er "
+"worden geen AI-knoppen getoond."
+
+#: templates/sidebyside/translators/claude_status.html:11
+#: templates/sidebyside/translators/status.html:7
+msgid "Machine translation is not set up yet, so no AI buttons are shown."
+msgstr ""
+"Automatisch vertalen is nog niet ingesteld, dus er worden geen AI-knoppen "
+"getoond."
+
+#: templates/sidebyside/translators/claude_status.html:13
+msgid "To set it up:"
+msgstr "Zo stel je het in:"
+
+#: templates/sidebyside/translators/claude_status.html:16
+msgid ""
+"Create an API key at <a href=\"https://platform.claude.com\" "
+"target=\"_blank\" rel=\"noopener\">platform.claude.com</a>, under API Keys. "
+"Tip: create it in a workspace with a monthly spend limit (Settings &gt; "
+"Workspaces &gt; Limits)."
+msgstr ""
+"Maak een API-sleutel aan op <a href=\"https://platform.claude.com\" "
+"target=\"_blank\" rel=\"noopener\">platform.claude.com</a>, onder API Keys. "
+"Tip: maak hem in een workspace met een maandlimiet (Settings &gt; Workspaces"
+" &gt; Limits)."
+
+#: templates/sidebyside/translators/claude_status.html:22
+msgid ""
+"Put the key in the environment of the server (e.g. a <code>.env</code> "
+"file), not in a settings file that is in version control:"
+msgstr ""
+"Zet de sleutel in de omgeving van de server (bijv. een "
+"<code>.env</code>-bestand), niet in een settings-bestand dat in versiebeheer"
+" staat:"
+
+#: templates/sidebyside/translators/claude_status.html:28
+msgid "Choose the provider in the Django settings:"
+msgstr "Kies de aanbieder in de Django-settings:"
+
+#: templates/sidebyside/translators/claude_status.html:31
+#: templates/sidebyside/translators/claude_status.html:62
+msgid "Restart the server, then click Test connection here."
+msgstr "Herstart de server en klik hier daarna op Verbinding testen."
+
+#: templates/sidebyside/translators/claude_status.html:33
+msgid ""
+"With Claude through Microsoft Foundry (Azure) instead: provider 'foundry' "
+"and these variables:"
+msgstr ""
+"Met Claude via Microsoft Foundry (Azure): aanbieder 'foundry' en deze "
+"variabelen:"
+
+#: templates/sidebyside/translators/claude_status.html:38
+msgid "Provider"
+msgstr "Aanbieder"
+
+#: templates/sidebyside/translators/claude_status.html:39
+msgid "Model"
+msgstr "Model"
+
+#: templates/sidebyside/translators/claude_status.html:40
+msgid "Credentials"
+msgstr "Sleutel"
+
+#: templates/sidebyside/translators/claude_status.html:43
+msgid "Missing"
+msgstr "Ontbreekt"
+
+#: templates/sidebyside/translators/claude_status.html:45
+msgid "Found"
+msgstr "Gevonden"
+
+#: templates/sidebyside/translators/claude_status.html:52
+msgid ""
+"Add the price of this model to SIDEBYSIDE['AI_PRICES'] to estimate the cost."
+msgstr ""
+"Voeg de prijs van dit model toe aan SIDEBYSIDE['AI_PRICES'] om de kosten te "
+"schatten."
+
+#: templates/sidebyside/translators/claude_status.html:57
+msgid "The key is missing, so no AI buttons are shown."
+msgstr "De sleutel ontbreekt, dus er worden geen AI-knoppen getoond."
+
+#: templates/sidebyside/translators/claude_status.html:59
+msgid ""
+"Put it in the environment of the server (e.g. a .env file), not in a "
+"settings file that is in version control:"
+msgstr ""
+"Zet hem in de omgeving van de server (bijv. een .env-bestand), niet in een "
+"settings-bestand dat in versiebeheer staat:"
+
+#: templates/sidebyside/translators/usage.html:3
+msgid "This month"
+msgstr "Deze maand"
+
+#: templates/sidebyside/translators/usage.html:6
+#, python-format
+msgid "%(counter)s request"
+msgid_plural "%(counter)s requests"
+msgstr[0] "%(counter)s verzoek"
+msgstr[1] "%(counter)s verzoeken"
+
+#: templates/sidebyside/translators/usage.html:7
+#, python-format
+msgid "%(tokens)s tokens"
+msgstr "%(tokens)s tokens"
+
+#: templates/sidebyside/translators/usage.html:16
+msgid ""
+"The monthly budget is reached: the AI buttons are hidden until next month. "
+"Raise the budget below to continue."
+msgstr ""
+"Het maandbudget is bereikt: de AI-knoppen zijn weg tot de volgende maand. "
+"Verhoog het budget hieronder om door te gaan."
+
+#: templates/sidebyside/translators/usage.html:21
+#, python-format
+msgid "%(percent)s%% of the monthly budget is used."
+msgstr "%(percent)s%% van het maandbudget is gebruikt."
+
+#: templates/sidebyside/translators/usage.html:25
+msgid ""
+"Estimated from what each request reports. The real bill is in the provider's"
+" console."
+msgstr ""
+"Geschat op basis van wat elk verzoek meldt. De echte factuur staat in de "
+"console van de aanbieder."
+
+#: templates/sidebyside/translators/usage.html:27
+msgid "The price is unknown, so no cost is estimated."
+msgstr "De prijs is onbekend, dus er worden geen kosten geschat."
+
+#: templates/sidebyside/translators/usage.html:30
+msgid "Test connection"
+msgstr "Verbinding testen"
+
+#: templates/sidebyside/translators/usage.html:32
+msgid ""
+"Sends one tiny request. Shows whether the key works, the service is "
+"available and there is credit left."
+msgstr ""
+"Stuurt één heel klein verzoek. Laat zien of de sleutel werkt, de dienst "
+"beschikbaar is en er nog tegoed is."
+
+#: translators/claude.py:145
+msgid "Machine translation is not configured."
+msgstr "Automatisch vertalen is niet ingesteld."
+
+#: translators/claude.py:202
+msgid "Machine translation declined this content."
+msgstr "Automatisch vertalen heeft deze inhoud geweigerd."
+
+#: translators/claude.py:204
+msgid "Too much text at once. Translate fewer fields."
+msgstr "Te veel tekst in één keer. Vertaal minder velden tegelijk."
+
+#: translators/claude.py:218
+msgid "Machine translation: invalid API key."
+msgstr "Automatisch vertalen: ongeldige API-sleutel."
+
+#: translators/claude.py:220
+msgid "Machine translation: this key has no access to the model."
+msgstr "Automatisch vertalen: deze sleutel heeft geen toegang tot het model."
+
+#: translators/claude.py:222
+msgid "Machine translation: model not found."
+msgstr "Automatisch vertalen: model niet gevonden."
+
+#: translators/claude.py:224
+msgid "Machine translation is busy, try again in a minute."
+msgstr "Automatisch vertalen is bezet, probeer het over een minuut opnieuw."
+
+#: translators/claude.py:226
+msgid "Machine translation: no credit left on the account."
+msgstr "Automatisch vertalen: geen tegoed meer op het account."
+
+#: translators/claude.py:228
+msgid "Machine translation: no connection."
+msgstr "Automatisch vertalen: geen verbinding."
+
+#: translators/claude.py:230
+#, python-format
+msgid "Machine translation failed (%(status)s)."
+msgstr "Automatisch vertalen is mislukt (%(status)s)."
+
+#: translators/claude.py:233
+msgid "Machine translation failed."
+msgstr "Automatisch vertalen is mislukt."
+
+#: use_cases/machine_translate.py:39
+msgid "The machine translation budget for this month is used up."
+msgstr "Het budget voor automatisch vertalen is deze maand op."
+
+#: use_cases/page_status.py:42
+msgid "Not created"
+msgstr "Niet aangemaakt"
+
+#: use_cases/page_status.py:45
+#, python-format
+msgid "%(count)s outdated"
+msgstr "%(count)s verouderd"
+
+#: use_cases/page_status.py:47
+#, python-format
+msgid "%(count)s to do"
+msgstr "%(count)s te doen"
+
+#: use_cases/page_status.py:49
+#, python-format
+msgid "%(count)s to review"
+msgstr "%(count)s na te kijken"
+
+#: use_cases/page_status.py:50
+msgid "Translated"
+msgstr "Vertaald"
+
+#: views.py:101
+msgid "The source page is not published yet. Publish both together."
+msgstr "De bronpagina is nog niet gepubliceerd. Publiceer ze samen."
+
+#: views.py:136
+msgid "Source and translation published."
+msgstr "Bron en vertaling gepubliceerd."
+
+#: views.py:141
+msgid ""
+"Translation published. What it takes over from the source's unpublished "
+"changes follows when the source is published."
+msgstr ""
+"Vertaling gepubliceerd. Wat ze overneemt uit de ongepubliceerde wijzigingen "
+"van de bron, volgt zodra de bron gepubliceerd wordt."
+
+#: views.py:147
+msgid "Translation published."
+msgstr "Vertaling gepubliceerd."
+
+#: views.py:149
+msgid "Translation saved as draft."
+msgstr "Vertaling opgeslagen als concept."
+
+#: views.py:210
+msgid "Nothing to translate."
+msgstr "Niets te vertalen."
+
+#: views.py:215
+#, python-format
+msgid "%(count)s field translated by AI. Check it, then save."
+msgid_plural "%(count)s fields translated by AI. Check them, then save."
+msgstr[0] "%(count)s veld vertaald door AI. Controleer het en sla dan op."
+msgstr[1] "%(count)s velden vertaald door AI. Controleer ze en sla dan op."
+
+#: views.py:308
+msgid "Connection works."
+msgstr "Verbinding werkt."
+
+#: wagtail_hooks.py:65
+#, python-format
+msgid "Create pages in %(language)s. Translations are created automatically."
+msgstr ""
+"Maak pagina's aan in de hoofdtaal (%(language)s). Vertalingen worden "
+"automatisch aangemaakt."
+
+#: wagtail_hooks.py:72
+#, python-format
+msgid ""
+"Pages are created in %(language)s, so you are now adding it there. The "
+"translation is created automatically."
+msgstr ""
+"Pagina's worden aangemaakt in %(language)s, dus je voegt hem nu daar toe. De"
+" vertaling wordt automatisch aangemaakt."
+
+#: wagtail_hooks.py:118
+#, python-format
+msgid "Translate: %(language)s"
+msgstr "Vertalen: %(language)s"
+
+#: wagtail_hooks.py:133
+#, python-format
+msgid "%(language)s translation: %(status)s."
+msgstr "Vertaling (%(language)s): %(status)s."
+
+#: wagtail_hooks.py:138
+msgid "Translate"
+msgstr "Vertalen"

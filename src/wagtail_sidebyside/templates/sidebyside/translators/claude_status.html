@@ -1,0 +1,64 @@
+{% load i18n wagtailadmin_tags %}
+{% if not status.installed %}
+    <p class="help-block help-warning">
+        {% icon name="warning" classname="sbs-icon" %}
+        {% trans "Machine translation with Claude needs the anthropic package, so no AI buttons are shown." %}
+    </p>
+    <pre class="sbs-ai-status__code">pip install "wagtail-sidebyside[claude]"</pre>
+{% elif not status.provider %}
+    <p class="help-block help-warning">
+        {% icon name="warning" classname="sbs-icon" %}
+        {% trans "Machine translation is not set up yet, so no AI buttons are shown." %}
+    </p>
+    <p><strong>{% trans "To set it up:" %}</strong></p>
+    <ol class="sbs-ai-status__steps">
+        <li>
+            {% blocktrans trimmed %}
+                Create an API key at <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a>, under API Keys.
+                Tip: create it in a workspace with a monthly spend limit (Settings &gt; Workspaces &gt; Limits).
+            {% endblocktrans %}
+        </li>
+        <li>
+            {% blocktrans trimmed %}
+                Put the key in the environment of the server (e.g. a <code>.env</code> file), not in a settings file that is in version control:
+            {% endblocktrans %}
+            <pre class="sbs-ai-status__code">ANTHROPIC_API_KEY=sk-ant-api...</pre>
+        </li>
+        <li>
+            {% trans "Choose the provider in the Django settings:" %}
+            <pre class="sbs-ai-status__code">SIDEBYSIDE = {"AI_PROVIDER": "anthropic", ...}</pre>
+        </li>
+        <li>{% trans "Restart the server, then click Test connection here." %}</li>
+    </ol>
+    <p>{% trans "With Claude through Microsoft Foundry (Azure) instead: provider 'foundry' and these variables:" %}</p>
+    <pre class="sbs-ai-status__code">ANTHROPIC_FOUNDRY_API_KEY=...
+ANTHROPIC_FOUNDRY_RESOURCE=...</pre>
+{% else %}
+    <dl class="sbs-ai-status__list">
+        <dt>{% trans "Provider" %}</dt><dd>{{ status.provider_name|default:status.provider }}</dd>
+        <dt>{% trans "Model" %}</dt><dd><code>{{ status.model }}</code></dd>
+        <dt>{% trans "Credentials" %}</dt>
+        <dd>
+            {% if status.missing %}
+                <span class="sbs-badge sbs-badge--outdated">{% trans "Missing" %}</span>
+            {% else %}
+                <span class="sbs-badge sbs-badge--done">{% trans "Found" %}</span>
+            {% endif %}
+        </dd>
+    </dl>
+    {% if status.available %}
+        {% include "sidebyside/translators/usage.html" %}
+        {% if not usage.price_known %}
+            <p class="help">{% trans "Add the price of this model to SIDEBYSIDE['AI_PRICES'] to estimate the cost." %}</p>
+        {% endif %}
+    {% else %}
+        <p class="help-block help-warning">
+            {% icon name="warning" classname="sbs-icon" %}
+            {% trans "The key is missing, so no AI buttons are shown." %}
+        </p>
+        <p>{% trans "Put it in the environment of the server (e.g. a .env file), not in a settings file that is in version control:" %}</p>
+        <pre class="sbs-ai-status__code">{% for name in status.missing %}{{ name }}=...{% if not forloop.last %}
+{% endif %}{% endfor %}</pre>
+        <p>{% trans "Restart the server, then click Test connection here." %}</p>
+    {% endif %}
+{% endif %}

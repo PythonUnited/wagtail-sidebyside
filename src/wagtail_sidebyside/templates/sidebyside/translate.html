@@ -1,0 +1,236 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n static wagtailadmin_tags wagtailcore_tags sidebyside_tags %}
+
+{% block titletag %}{% blocktrans trimmed with title=source_page.title language=locale.get_display_name %}Translate {{ title }} to {{ language }}{% endblocktrans %}{% endblock %}
+
+{% block bodyclass %}editor-view{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    {{ form.media.css }}
+    {{ action_menu.media.css }}
+    {{ side_panels.media.css }}
+{% endblock %}
+
+{% block content %}
+    {% include "wagtailadmin/shared/headers/page_edit_header.html" with title=target_page.title page=target_page page_for_status=target_page side_panels=side_panels history_url=history_url %}
+    {% translation_bar source_page locale %}
+
+    <form method="post" class="sbs" data-sbs-form data-edit-form novalidate
+          data-controller="w-unsaved"
+          data-action="w-unsaved#submit beforeunload@window->w-unsaved#confirm"
+          data-w-unsaved-confirmation-value="true"
+          data-w-unsaved-force-value="{{ form.is_bound|yesno:'true,false' }}"{% if focus and focus != "all" %} data-sbs-focus="{{ focus }}"{% endif %}>
+        {% csrf_token %}
+
+        <div class="sbs-toolbar">
+            <div class="sbs-toolbar__info">
+                <span class="sbs-progress">
+                    {% blocktrans trimmed %}{{ done }} of {{ total }} translated{% endblocktrans %}
+                    <progress max="{{ total }}" value="{{ done }}"></progress>
+                </span>
+                <span class="sbs-filters" role="group">
+                    <button type="button" class="button button-small button-secondary" data-sbs-filter="" aria-pressed="true">{% trans "All" %}</button>
+                    <button type="button" class="button button-small button-secondary" data-sbs-filter="todo" aria-pressed="false">{% trans "To do" %} ({{ counts.todo }})</button>
+                    <button type="button" class="button button-small button-secondary" data-sbs-filter="outdated" aria-pressed="false">{% trans "Outdated" %} ({{ counts.outdated }})</button>
+                    <button type="button" class="button button-small button-secondary" data-sbs-filter="review" aria-pressed="false">{% trans "To review" %} ({{ counts.review }})</button>
+                </span>
+            </div>
+            <div class="sbs-toolbar__actions">
+                {% if ai_budget_reached %}
+                    <span class="sbs-muted">{% icon name="warning" classname="sbs-icon" %} {% trans "AI budget for this month is used up." %}</span>
+                {% endif %}
+                {% if ai_available %}
+                    <button type="submit" name="ai" value="all" class="button button-small button-secondary" data-sbs-busy="{% trans 'Translating...' %}">{% icon name="globe" classname="sbs-icon" %} {% trans "Translate empty fields with AI" %}</button>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if locked %}
+            <p class="help-block help-warning">{% icon name="lock" classname="sbs-icon" %} {% trans "This page is locked. You cannot save the translation." %}</p>
+        {% endif %}
+        {% if source_page.has_unpublished_changes %}
+            <p class="help-block help-warning">{% icon name="warning" classname="sbs-icon" %} {% trans "The source page has unpublished changes. You are translating its latest draft. Use 'Publish source and translation' to put both live at once." %}</p>
+        {% endif %}
+        {% if form.non_field_errors %}
+            <div class="help-block help-critical">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        {% if orphans %}
+            <div class="sbs-orphans">
+                <p><strong>{% icon name="warning" classname="sbs-icon" %} {% blocktrans trimmed with language=locale.get_display_name count counter=orphans|length %}
+                    {{ counter }} {{ language }} text has no counterpart in the source page.
+                {% plural %}
+                    {{ counter }} {{ language }} texts have no counterpart in the source page.
+                {% endblocktrans %}</strong>
+                {% trans "The source page has changed (blocks removed or of another type). Saving moves these texts to 'Removed from the source' below. Until then, publishing the source does not publish this translation." %}</p>
+                {% for unit in orphans %}
+                    <details>
+                        <summary>{{ unit.label }}</summary>
+                        {% if unit.kind == "richtext" %}<div class="sbs-richtext">{{ unit.source|richtext }}</div>{% else %}<p>{{ unit.source|linebreaksbr }}</p>{% endif %}
+                    </details>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if removed %}
+            <details class="sbs-removed">
+                <summary>
+                    {% blocktrans trimmed count counter=removed|length %}
+                        Removed from the source: {{ counter }} translated text
+                    {% plural %}
+                        Removed from the source: {{ counter }} translated texts
+                    {% endblocktrans %}
+                </summary>
+                <p class="help">{% trans "Their block was removed from the source page. If a block with the same source text comes back, its translation is filled in again." %}</p>
+                {% for item in removed %}
+                    <div class="sbs-removed__item">
+                        <div class="sbs-removed__head">
+                            <strong>{{ item.label }}</strong>
+                            <button type="submit" name="discard" value="{{ forloop.counter0 }}" class="sbs-icon-button" formnovalidate>{% icon name="bin" classname="sbs-icon" %} {% trans "Discard" %}</button>
+                        </div>
+                        <div class="sbs-columns">
+                            <div class="sbs-source">{% if item.kind == "richtext" %}{{ item.source|richtext }}{% else %}{{ item.source|default:"-"|linebreaksbr }}{% endif %}</div>
+                            <div class="sbs-source">{% if item.kind == "richtext" %}{{ item.text|richtext }}{% else %}{{ item.text|linebreaksbr }}{% endif %}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </details>
+        {% endif %}
+
+        <div class="sbs-columns sbs-columns--head">
+            <div>{{ source_page.locale.get_display_name }}</div>
+            <div>{{ locale.get_display_name }}</div>
+        </div>
+
+        {% for row, field, machine_text, copied_text in form.entries %}
+            {% ifchanged row.unit.section %}
+                {% if row.unit.section == "metadata" %}
+                    <div class="sbs-section">
+                        <h2 class="sbs-section__heading">{% trans "Metadata" %}</h2>
+                        <p class="help">{% trans "The web address and what search engines show: the slug is the last part of the address, the title tag and meta description appear in search results." %}</p>
+                    </div>
+                {% else %}
+                    <div class="sbs-section">
+                        <h2 class="sbs-section__heading">{% trans "Content" %}</h2>
+                    </div>
+                {% endif %}
+            {% endifchanged %}
+            {% if field is None %}
+                <div class="sbs-row sbs-row--synced" data-status="{{ row.status }}">
+                    {% icon name="link" classname="sbs-icon" %} {{ row.unit.label }}
+                    <span class="sbs-muted">&mdash; {% trans "no text, copied from source" %}</span>
+                </div>
+            {% elif row.unit.kind == "image" or row.unit.kind == "document" %}
+                {% fragment as row_controls %}
+                    <span class="sbs-controls">
+                    <span class="sbs-badge sbs-badge--{% if row.override %}done{% else %}source{% endif %}">
+                        {% if not row.override %}{% trans "Same as source" %}{% elif row.unit.kind == "image" %}{% trans "Different image" %}{% else %}{% trans "Different document" %}{% endif %}
+                    </span>
+                    </span>
+                {% endfragment %}
+                <div class="sbs-row" data-status="{{ row.status }}" data-path="{{ row.unit.path }}">
+                    {% panel id_prefix="sbs" id=forloop.counter heading=row.unit.label heading_size="label" header_controls=row_controls %}
+                        <div class="sbs-columns">
+                            <div class="sbs-source">{% object_preview row.unit %}</div>
+                            <div class="sbs-target sbs-override" data-sbs-override-target>
+                                <label class="sbs-confirm">
+                                    <input type="checkbox" name="override" value="{{ row.unit.path }}"{% if row.unit.path in form.override_paths %} checked{% endif %}>
+                                    {% if row.unit.kind == "image" %}{% trans "Use a different image in this language" %}{% else %}{% trans "Use a different document in this language" %}{% endif %}
+                                </label>
+                                <div class="sbs-override__chooser">
+                                    {{ field }}
+                                    {{ field.errors }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endpanel %}
+                </div>
+            {% else %}
+                {% fragment as row_controls %}
+                    <span class="sbs-controls">
+                    {% if machine_text is not None %}
+                        <span class="sbs-badge sbs-badge--review">{% trans "AI, not saved" %}</span>
+                    {% else %}
+                        <span class="sbs-badge sbs-badge--{% if not row.unit.source and not row.translation %}source{% else %}{{ row.status }}{% endif %}">
+                            {% if not row.unit.source and not row.translation %}{% trans "Empty in source" %}{% elif row.same %}{% trans "Same as source" %}{% elif row.reused %}{% trans "Previous translation, to review" %}{% elif row.status == "todo" %}{% trans "To do" %}{% elif row.status == "outdated" %}{% trans "Outdated" %}{% elif row.status == "review" %}{% trans "To review" %}{% else %}{% trans "Done" %}{% endif %}
+                        </span>
+                    {% endif %}
+                    {% if row.unit.path != "slug" and row.unit.source and not row.same and not locked %}
+                        <button type="submit" name="copy" value="{{ row.unit.path }}" class="sbs-icon-button" title="{% trans 'Copy the source text into the translation' %}" aria-label="{% trans 'Copy the source text into the translation' %}">{% icon name="copy" classname="sbs-icon" %}</button>
+                        {% if ai_available %}
+                            <button type="submit" name="ai" value="{{ row.unit.path }}" class="sbs-icon-button" data-sbs-busy="{% trans 'Translating...' %}" title="{% trans 'Translate this field with AI' %}" aria-label="{% trans 'Translate this field with AI' %}">{% icon name="globe" classname="sbs-icon" %} AI</button>
+                        {% endif %}
+                    {% endif %}
+                    </span>
+                {% endfragment %}
+                {# A Wagtail panel, as in the page editor: collapsible and listed in the minimap. #}
+                <div class="sbs-row" data-status="{{ row.status }}" data-path="{{ row.unit.path }}">
+                    {% panel id_prefix="sbs" id=forloop.counter heading=row.unit.label heading_size="label" id_for_label=field.id_for_label header_controls=row_controls %}
+                        {% if machine_text is not None %}
+                            <input type="hidden" name="machine:{{ row.unit.path }}" value="{{ machine_text }}">
+                        {% endif %}
+                        {% if copied_text is not None %}
+                            <input type="hidden" name="copied:{{ row.unit.path }}" value="{{ copied_text }}">
+                        {% endif %}
+                        <div class="sbs-columns">
+                            <div class="sbs-source{% if not row.unit.source %} sbs-source--empty{% endif %}">
+                                {% if row.unit.kind == "richtext" %}
+                                    <div class="sbs-richtext">{{ row.unit.source|richtext }}</div>
+                                {% elif row.unit.kind == "html" %}
+                                    <pre class="sbs-code">{{ row.unit.source }}</pre>
+                                {% elif row.unit.source %}
+                                    {{ row.unit.source|linebreaksbr }}
+                                {% else %}
+                                    <span class="sbs-source__empty">{% trans "Empty in the source" %}</span>
+                                {% endif %}
+                            </div>
+                            <div class="sbs-target" data-sbs-same-label="{% trans 'Source text is used' %}"{% if row.unit.path == "slug" %} data-sbs-slug{% elif row.unit.path == "title" %} data-sbs-title{% endif %}>
+                                {{ field }}
+                                {{ field.errors }}
+                            </div>
+                        </div>
+                        {% if row.status == "outdated" %}
+                            <div class="sbs-outdated">
+                                <strong>{% trans "Source changed:" %}</strong>
+                                <span class="sbs-diff">{% for op, text in row.diff %}{% if op == "delete" %}<del>{{ text }}</del>{% elif op == "insert" %}<ins>{{ text }}</ins>{% else %}{{ text }}{% endif %}{% endfor %}</span>
+                                <label class="sbs-confirm">
+                                    <input type="checkbox" name="confirm" value="{{ row.unit.path }}">
+                                    {% trans "Translation is still correct" %}
+                                </label>
+                            </div>
+                        {% endif %}
+                        {% if row.status == "todo" and machine_text is None or row.same %}
+                            <label class="sbs-confirm">
+                                <input type="checkbox" name="same" value="{{ row.unit.path }}"{% if row.unit.path in form.same_paths %} checked{% endif %}>
+                                {% trans "Same in both languages (keep the source text)" %}
+                            </label>
+                        {% endif %}
+                        {% if row.status == "review" and machine_text is None %}
+                            <label class="sbs-confirm">
+                                <input type="checkbox" name="confirm" value="{{ row.unit.path }}">
+                                {% trans "Checked: the translation is correct" %}
+                            </label>
+                        {% endif %}
+                    {% endpanel %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {# Wagtail's own action menu, as in the page editor: Save draft + Publish etc. #}
+        <footer class="footer w-grid md:w-grid-flow-col">
+            <nav class="actions actions--primary footer__container" aria-label="{% trans 'Actions (footer)' %}">
+                {{ action_menu.render_html }}
+            </nav>
+        </footer>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {{ form.media.js }}
+    {{ action_menu.media.js }}
+    {{ side_panels.media.js }}
+    {# defer: Wagtail renders this block above the page content. #}
+    <script defer src="{% static 'sidebyside/translate.js' %}"></script>
+{% endblock %}

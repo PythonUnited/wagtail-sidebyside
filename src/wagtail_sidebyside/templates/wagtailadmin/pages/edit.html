@@ -1,0 +1,12 @@
+{% extends "wagtailadmin/pages/edit.html" %}
+{% load sidebyside_tags %}
+{% comment %}
+Adds a row with translation buttons at the top of the page editor of a source
+page. Extends Wagtail's own template (recursive extends), so only this block
+is ours. If Wagtail renames the block, the row disappears; nothing breaks.
+{% endcomment %}
+
+{% block form %}
+    {% translation_bar page %}
+    {{ block.super }}
+{% endblock %}

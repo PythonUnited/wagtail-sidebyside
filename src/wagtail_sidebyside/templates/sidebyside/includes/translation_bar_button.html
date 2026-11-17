@@ -1,0 +1,7 @@
+{% load i18n %}
+<a href="{{ item.url }}"
+   class="button button-small sbs-bar__button{% if not item.current %} button-secondary{% endif %}"
+   {% if item.current %}aria-current="page"{% endif %}>
+    {{ item.language }}
+    <span class="sbs-badge sbs-badge--{{ item.state }}">{% if item.state == "source" %}{% trans "Source" %}{% else %}{{ item.label }}{% endif %}</span>
+</a>

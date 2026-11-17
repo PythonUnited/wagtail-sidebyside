@@ -1,0 +1,533 @@
+.sbs {
+    padding: 0 var(--w-gutter, 1.25rem) 3rem;
+}
+
+/* Room for Wagtail's minimap on the right, as in the page editor, and for
+   its floating "Collapse all" button above the panel headers. */
+@media (min-width: 50em) {
+    .sbs {
+        padding-inline-end: 9rem;
+    }
+}
+
+/* With a side panel open (e.g. live preview) the form makes room for it,
+   with the same rules and variable as Wagtail's own .w-form-width. */
+.sbs {
+    container-type: inline-size;
+}
+
+.side-panel-open .sbs {
+    max-width: max(33.333333%, 100% - var(--side-panel-width));
+}
+
+.side-panel-open.minimap-open .sbs {
+    max-width: max(40%, 100% - var(--side-panel-width) - 15rem);
+}
+
+/* Too narrow for two columns: source above translation. */
+@container (max-width: 40rem) {
+    .sbs-columns {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .sbs-columns--head {
+        display: none;
+    }
+}
+
+.sbs-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+    background: var(--w-color-surface-page);
+    border-bottom: 1px solid var(--w-color-border-furniture);
+}
+
+.sbs-toolbar__info,
+.sbs-toolbar__actions,
+.sbs-filters,
+.sbs-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sbs-tabs a[aria-current="page"] {
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.sbs-filters [aria-pressed="true"] {
+    background: var(--w-color-surface-button-default);
+    color: var(--w-color-text-button);
+}
+
+.sbs-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.sbs-columns--head {
+    font-weight: 700;
+    color: var(--w-color-text-label);
+    margin-bottom: 0.5rem;
+}
+
+.sbs-row {
+    margin-bottom: 1.5rem;
+}
+
+.sbs-row__label {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--w-color-text-label);
+}
+
+.sbs-row--synced {
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    color: var(--w-color-text-meta);
+}
+
+.sbs-muted {
+    color: var(--w-color-text-meta);
+}
+
+.sbs-icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+}
+
+/* Same type size, line height and padding as Wagtail's fields (19px / 1.5,
+   20px sides, as in Draftail), so source and translation line up. */
+.sbs-source {
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.3rem;
+    background: var(--w-color-surface-field-inactive);
+    font-size: 1.1875rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.sbs-richtext > :first-child {
+    margin-top: 0;
+}
+
+.sbs-richtext > :last-child {
+    margin-bottom: 0;
+}
+
+.sbs-code {
+    font-family: monospace;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+.sbs-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.1rem 0.5rem;
+    border-radius: 1rem;
+}
+
+
+
+
+.sbs-outdated {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-left: 4px solid var(--w-color-warning-100);
+    background: var(--w-color-surface-field-inactive);
+}
+
+.sbs-diff del {
+    background: var(--w-color-critical-50, #fde8e8);
+    color: var(--w-color-critical-200);
+}
+
+.sbs-diff ins {
+    background: var(--w-color-positive-50, #e6f4ea);
+    text-decoration: none;
+}
+
+.sbs-confirm {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+.sbs-hidden {
+    display: none;
+}
+
+@media (max-width: 50em) {
+    .sbs-columns {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .sbs-columns--head {
+        display: none;
+    }
+}
+
+
+a.sbs-badge {
+    text-decoration: none;
+}
+
+a.sbs-badge:hover {
+    text-decoration: underline;
+}
+
+.sbs-overview td,
+.sbs-overview th {
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+    border-bottom: 1px solid var(--w-color-border-furniture);
+}
+
+.sbs-overview {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+.sbs-row__actions {
+    display: inline-flex;
+    gap: 0.25rem;
+    margin-inline-start: auto;
+}
+
+.sbs-icon-button {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--w-color-border-field-default);
+    border-radius: 0.3rem;
+    background: transparent;
+    color: var(--w-color-text-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sbs-icon-button:hover {
+    border-color: var(--w-color-border-button-outline-default, currentcolor);
+    background: var(--w-color-surface-field-inactive);
+}
+
+.sbs-orphans {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--w-color-warning-100);
+    background: var(--w-color-surface-field-inactive);
+}
+
+.sbs-orphans summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Row with translation buttons at the top of the page editor. */
+.sbs-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.75rem var(--w-gutter, 1.25rem);
+    border-bottom: 1px solid var(--w-color-border-furniture);
+    background: var(--w-color-surface-page);
+}
+
+.sbs-bar__label {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+    font-weight: 600;
+    color: var(--w-color-text-label);
+}
+
+.sbs-bar__button {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sbs-bar-menu {
+    position: relative;
+}
+
+.sbs-bar-menu summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.sbs-bar-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.sbs-bar-menu__items {
+    position: absolute;
+    z-index: 100;
+    inset-inline-start: 0;
+    top: calc(100% + 0.25rem);
+    min-width: 16rem;
+    padding: 0.25rem 0;
+    border: 1px solid var(--w-color-border-furniture);
+    border-radius: 0.3rem;
+    background: var(--w-color-surface-page);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+}
+
+.sbs-bar-menu__item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.75rem;
+    color: var(--w-color-text-context);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.sbs-bar-menu__item:hover {
+    background: var(--w-color-surface-field-inactive);
+}
+
+
+.sbs-bar-menu__item[aria-current="page"] {
+    font-weight: 700;
+}
+
+/* "Same in both languages": the field is not used. Dimmed, struck through
+   and tagged on its border, so any text in it is clearly not what the page
+   shows. pointer-events also blocks the Draftail editor (not a form field). */
+.sbs-target--same {
+    position: relative;
+    border: 1px dashed var(--w-color-border-field-default);
+    border-radius: 0.3rem;
+    padding: 0.25rem;
+}
+
+.sbs-target--same > * {
+    opacity: 0.45;
+    text-decoration: line-through;
+    pointer-events: none;
+}
+
+.sbs-target--same input,
+.sbs-target--same textarea {
+    text-decoration: line-through;
+}
+
+.sbs-target--same::after {
+    content: attr(data-sbs-same-label);
+    position: absolute;
+    top: -0.65rem;
+    inset-inline-end: 0.75rem;
+    padding: 0 0.4rem;
+    border-radius: 0.6rem;
+    background: var(--w-color-surface-page);
+    color: var(--w-color-text-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Source image / document in the translation screen. */
+.sbs-object {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.sbs-object__image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.3rem;
+}
+
+.sbs-override__chooser {
+    margin-top: 0.5rem;
+}
+
+/* Settings > Translations: connection status. */
+.sbs-ai-status__list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    margin: 0 0 1rem;
+}
+
+.sbs-ai-status__list dt {
+    font-weight: 600;
+}
+
+.sbs-ai-status__list dd {
+    margin: 0;
+}
+
+/* Translated texts whose block was removed from the source. */
+.sbs-removed {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.3rem;
+    background: var(--w-color-surface-field-inactive);
+}
+
+.sbs-removed summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.sbs-removed__item {
+    margin-top: 1rem;
+}
+
+.sbs-removed__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.sbs-removed .sbs-source {
+    background: var(--w-color-surface-page);
+}
+
+.sbs-ai-status__steps {
+    margin: 0 0 1rem;
+    padding-inline-start: 1.25rem;
+}
+
+.sbs-ai-status__steps li {
+    margin-bottom: 0.5rem;
+}
+
+.sbs-ai-status__code {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.3rem;
+    background: var(--w-color-surface-field-inactive);
+    font-size: 0.875rem;
+    white-space: pre;
+    user-select: all;
+}
+
+/* Status badges: solid colours from Wagtail's palette, readable text. */
+.sbs-badge {
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.sbs-badge--done {
+    background: var(--w-color-positive-100);
+    color: #fff;
+}
+
+.sbs-badge--review {
+    background: var(--w-color-info-100);
+    color: #fff;
+}
+
+.sbs-badge--outdated {
+    background: var(--w-color-warning-100);
+    color: #1d1d1d;
+}
+
+.sbs-badge--missing {
+    background: var(--w-color-critical-200);
+    color: #fff;
+}
+
+.sbs-badge--todo {
+    background: var(--w-color-surface-field-inactive);
+    border-color: var(--w-color-border-field-default);
+    color: var(--w-color-text-context);
+}
+
+.sbs-badge--source {
+    background: transparent;
+    border-color: var(--w-color-border-field-default);
+    color: var(--w-color-text-label);
+}
+
+.sbs-ai-status__budget {
+    display: block;
+    width: 16rem;
+    max-width: 100%;
+    margin-top: 0.35rem;
+}
+
+/* Section headings in the translation screen: content, metadata. */
+.sbs-section {
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--w-color-border-furniture);
+}
+
+.sbs-section__heading {
+    margin: 0;
+    font-size: 1.375rem;
+}
+
+.sbs-section .help {
+    margin: 0.25rem 0 0;
+}
+
+/* Status badge and action buttons in a panel header: one row, same height. */
+.sbs-controls {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.sbs-controls .sbs-badge,
+.sbs-controls .sbs-icon-button {
+    display: inline-flex;
+    box-sizing: border-box;
+    height: 1.75rem;
+    align-items: center;
+    line-height: 1;
+}
+
+.sbs-controls .sbs-badge {
+    padding: 0 0.65rem;
+}
+
+.sbs-controls .sbs-icon-button {
+    padding: 0 0.5rem;
+}
+
+/* A source field without text: clearly not content. */
+.sbs-source--empty {
+    display: flex;
+    align-items: center;
+    border: 1px dashed var(--w-color-border-field-default);
+    background: transparent;
+}
+
+.sbs-source__empty {
+    color: var(--w-color-text-meta);
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+.sbs-source__empty::before {
+    content: "\2014\00a0";
+}

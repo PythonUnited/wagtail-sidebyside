@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: sudo apt-get install -y gettext
+      - run: uv sync
+      - run: uv run ruff check src tests
+      - run: uv run ruff format --check src tests
+      - name: Messages are compiled and up to date
+        run: |
+          cd src/wagtail_sidebyside
+          for po in locale/*/LC_MESSAGES/django.po; do msgfmt --check -o /dev/null "$po"; done
+      - name: No missing migrations
+        run: uv run django-admin makemigrations --check --dry-run --settings=tests.settings --pythonpath=.
+      - run: uv run pytest

@@ -1,0 +1,32 @@
+{% load i18n wagtailadmin_tags %}
+<dl class="sbs-ai-status__list">
+    <dt>{% trans "This month" %}</dt>
+    <dd>
+        {% if usage.price_known %}${{ usage.cost|floatformat:2 }}{% if usage.budget is not None %} / ${{ usage.budget|floatformat:2 }}{% endif %} &middot; {% endif %}
+        {% blocktrans trimmed count counter=usage.requests %}{{ counter }} request{% plural %}{{ counter }} requests{% endblocktrans %}
+        &middot; {% blocktrans trimmed with tokens=usage.tokens %}{{ tokens }} tokens{% endblocktrans %}
+        {% if usage.percent is not None %}
+            <progress class="sbs-ai-status__budget" max="100" value="{{ usage.percent }}"></progress>
+        {% endif %}
+    </dd>
+</dl>
+{% if usage.reached %}
+    <p class="help-block help-critical">
+        {% icon name="warning" classname="sbs-icon" %}
+        {% trans "The monthly budget is reached: the AI buttons are hidden until next month. Raise the budget below to continue." %}
+    </p>
+{% elif usage.warning %}
+    <p class="help-block help-warning">
+        {% icon name="warning" classname="sbs-icon" %}
+        {% blocktrans trimmed with percent=usage.percent %}{{ percent }}% of the monthly budget is used.{% endblocktrans %}
+    </p>
+{% endif %}
+{% if usage.price_known %}
+    <p class="help">{% trans "Estimated from what each request reports. The real bill is in the provider's console." %}</p>
+{% else %}
+    <p class="help">{% trans "The price is unknown, so no cost is estimated." %}</p>
+{% endif %}
+<button type="submit" class="button button-small button-secondary" formaction="{% url 'sidebyside:ai_check' %}" formmethod="post" formnovalidate>
+    {% trans "Test connection" %}
+</button>
+<p class="help">{% trans "Sends one tiny request. Shows whether the key works, the service is available and there is credit left." %}</p>

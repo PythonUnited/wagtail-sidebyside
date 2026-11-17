@@ -1,0 +1,21 @@
+{% load i18n static wagtailadmin_tags %}
+{% if rows %}
+    {% fragment as heading %}{% blocktrans trimmed count counter=rows|length %}{{ counter }} page needs translation work{% plural %}{{ counter }} pages need translation work{% endblocktrans %}{% endfragment %}
+    {% panel id="sidebyside-translations" heading=heading classname="w-panel--dashboard" %}
+        <table class="sbs-overview">
+            <tbody>
+                {% for page, statuses in rows|slice:":5" %}
+                    <tr>
+                        <td><a href="{% url 'wagtailadmin_pages:edit' page.pk %}">{{ page.get_admin_display_title }}</a></td>
+                        <td>
+                            {% for status in statuses %}{% if status.needs_work %}
+                                <a class="sbs-badge sbs-badge--{{ status.state }}" href="{{ status.url }}">{{ status.locale.language_code|upper }}: {{ status.label }}</a>
+                            {% endif %}{% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p><a href="{% url 'sidebyside:overview' %}?work=1">{% trans "All translations" %}</a></p>
+    {% endpanel %}
+{% endif %}

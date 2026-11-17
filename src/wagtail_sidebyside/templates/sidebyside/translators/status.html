@@ -1,0 +1,9 @@
+{% load i18n wagtailadmin_tags %}
+{% if status.available %}
+    {% include "sidebyside/translators/usage.html" %}
+{% else %}
+    <p class="help-block help-warning">
+        {% icon name="warning" classname="sbs-icon" %}
+        {% trans "Machine translation is not set up yet, so no AI buttons are shown." %}
+    </p>
+{% endif %}

@@ -1,0 +1,27 @@
+{% load i18n wagtailadmin_tags %}
+{% if items %}
+    <div class="sbs-bar">
+        <span class="sbs-bar__label">{% icon name="globe" classname="sbs-icon" %} {% trans "Translations" %}</span>
+        {% with source=items.0 translations=items|slice:"1:" %}
+            {% include "sidebyside/includes/translation_bar_button.html" with item=source %}
+            {% if translations|length > 2 %}
+                <details class="sbs-bar-menu">
+                    <summary class="button button-small button-secondary">{% trans "Choose a language" %}</summary>
+                    <div class="sbs-bar-menu__items">
+                        {% for item in translations %}
+                            <a href="{{ item.url }}" class="sbs-bar-menu__item"{% if item.current %} aria-current="page"{% endif %}>
+                                {{ item.language }}
+                                <span class="sbs-badge sbs-badge--{{ item.state }}">{{ item.label }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </details>
+            {% else %}
+                {% for item in translations %}
+                    {% include "sidebyside/includes/translation_bar_button.html" %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <a href="{% url 'sidebyside:overview' %}" class="button button-small button-secondary">{% trans "All translations" %}</a>
+    </div>
+{% endif %}

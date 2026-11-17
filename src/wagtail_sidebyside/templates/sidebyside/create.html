@@ -1,0 +1,22 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n wagtailadmin_tags %}
+
+{% block titletag %}{% trans "Create translation" %}{% endblock %}
+
+{% block content %}
+    {% include "wagtailadmin/shared/header.html" with title=source_page.title icon="globe" %}
+    <div class="nice-padding">
+        <p>
+            {% blocktrans trimmed with language=locale.get_display_name %}
+                This page has no {{ language }} version yet. It is created as a copy of
+                the source page. Until you translate it, it shows the source text.
+            {% endblocktrans %}
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="button button-primary">
+                {% blocktrans trimmed with language=locale.get_display_name %}Create {{ language }} translation{% endblocktrans %}
+            </button>
+        </form>
+    </div>
+{% endblock %}

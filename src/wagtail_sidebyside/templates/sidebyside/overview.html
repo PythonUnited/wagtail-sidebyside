@@ -1,0 +1,47 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n static wagtailadmin_tags %}
+
+{% block titletag %}{% trans "Translations" %}{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    {% include "wagtailadmin/shared/header.html" with title=_("Translations") icon="globe" %}
+    <div class="nice-padding">
+        <p>
+            {% if needs_work_only %}
+                <a class="button button-small button-secondary" href="?">{% trans "Show all pages" %}</a>
+            {% else %}
+                <a class="button button-small button-secondary" href="?work=1">{% trans "Only pages with work" %}</a>
+            {% endif %}
+        </p>
+        {% if rows %}
+            <table class="sbs-overview">
+                <thead>
+                    <tr>
+                        <th>{% trans "Page" %}</th>
+                        {% for locale in locales %}<th>{{ locale.get_display_name }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page, indent, statuses in rows %}
+                        <tr>
+                            <td style="padding-inline-start: {{ indent }}.5rem">
+                                <a href="{% url 'wagtailadmin_pages:edit' page.pk %}">{{ page.get_admin_display_title }}</a>
+                            </td>
+                            {% for status in statuses %}
+                                <td>
+                                    <a class="sbs-badge sbs-badge--{{ status.state }}" href="{{ status.url }}">{{ status.label }}</a>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{% trans "All pages are translated." %}</p>
+        {% endif %}
+    </div>
+{% endblock %}

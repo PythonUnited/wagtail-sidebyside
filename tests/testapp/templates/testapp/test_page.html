@@ -1,0 +1,17 @@
+{% load wagtailcore_tags %}<!doctype html>
+<html lang="{{ page.locale.language_code }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ page.title }}</title>
+    <style>
+        body { font: 18px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+        blockquote { font-style: italic; border-left: 4px solid #f5c242; margin: 1rem 0; padding-left: 1rem; }
+        .block-heading { font-size: 1.4rem; font-weight: 700; margin-top: 1.5rem; }
+        .chart { border: 1px dashed #aaa; padding: 2rem; text-align: center; color: #888; margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <h1>{{ page.hero_title|default:page.title }}</h1>
+    {% include_block page.body %}
+</body>
+</html>

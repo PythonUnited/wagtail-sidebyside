@@ -1,0 +1,11 @@
+{% load i18n wagtailadmin_tags wagtailimages_tags %}
+{% if object and is_image %}
+    <figure class="sbs-object">
+        {% image object max-240x160 class="sbs-object__image" %}
+        <figcaption>{{ object.title }}</figcaption>
+    </figure>
+{% elif object %}
+    <a class="sbs-object" href="{{ object.url }}" target="_blank" rel="noopener">{% icon name="doc-full" classname="sbs-icon" %} {{ object.title }}</a>
+{% else %}
+    <span class="sbs-muted">{% if is_image %}{% trans "No image" %}{% else %}{% trans "No document" %}{% endif %}</span>
+{% endif %}
