@@ -1,7 +1,12 @@
 {% load i18n wagtailadmin_tags wagtailimages_tags %}
 {% if object and is_image %}
+    {% image object max-240x160 as thumbnail %}
     <figure class="sbs-object">
-        {% image object max-240x160 class="sbs-object__image" %}
+        {% if thumbnail.width %}
+            <img src="{{ thumbnail.url }}" width="{{ thumbnail.width }}" height="{{ thumbnail.height }}" alt="{{ thumbnail.alt }}" class="sbs-object__image">
+        {% else %}
+            <span class="help-block help-warning">{% icon name="warning" classname="sbs-icon" %}{% trans "The image file is missing on the server." %}</span>
+        {% endif %}
         <figcaption>{{ object.title }}</figcaption>
     </figure>
 {% elif object %}

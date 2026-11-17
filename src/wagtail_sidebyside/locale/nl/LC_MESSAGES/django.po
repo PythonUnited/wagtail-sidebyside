@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 09:28-0600\n"
+"POT-Creation-Date: 2026-11-17 12:27-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,11 +117,15 @@ msgstr[1] "%(counter)s pagina's hebben vertaalwerk"
 msgid "All translations"
 msgstr "Alle vertalingen"
 
-#: templates/sidebyside/includes/object_preview.html:10
+#: templates/sidebyside/includes/object_preview.html:8
+msgid "The image file is missing on the server."
+msgstr "Het afbeeldingsbestand ontbreekt op de server."
+
+#: templates/sidebyside/includes/object_preview.html:15
 msgid "No image"
 msgstr "Geen afbeelding"
 
-#: templates/sidebyside/includes/object_preview.html:10
+#: templates/sidebyside/includes/object_preview.html:15
 msgid "No document"
 msgstr "Geen document"
 

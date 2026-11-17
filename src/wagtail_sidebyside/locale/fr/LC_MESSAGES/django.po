@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 09:28-0600\n"
+"POT-Creation-Date: 2026-11-17 12:27-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,11 +118,15 @@ msgstr[1] "%(counter)s pages à traduire"
 msgid "All translations"
 msgstr "Toutes les traductions"
 
-#: templates/sidebyside/includes/object_preview.html:10
+#: templates/sidebyside/includes/object_preview.html:8
+msgid "The image file is missing on the server."
+msgstr "Le fichier image est absent du serveur."
+
+#: templates/sidebyside/includes/object_preview.html:15
 msgid "No image"
 msgstr "Pas d'image"
 
-#: templates/sidebyside/includes/object_preview.html:10
+#: templates/sidebyside/includes/object_preview.html:15
 msgid "No document"
 msgstr "Pas de document"
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 (2026-11-17)
+
+- Show a warning instead of an empty box when an image file is missing on the server.
+
 ## 0.1.2 (2026-11-17)
 
 - Show bullets and numbers of lists in the source column.

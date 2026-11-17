@@ -374,6 +374,10 @@ a.sbs-badge:hover {
     font-size: 0.875rem;
 }
 
+.sbs-object .help-block {
+    margin: 0;
+}
+
 .sbs-object__image {
     max-width: 100%;
     height: auto;

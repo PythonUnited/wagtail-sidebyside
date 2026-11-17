@@ -83,3 +83,28 @@ def test_custom_translator(admin, pages, settings):  # noqa: F811
     html = admin.post(url, {"ai": "body.h1"}).content.decode()
     assert 'name="machine:body.h1" value="OMELETTE DU FROMAGE"' in html
     assert AIUsage.objects.this_month().input_tokens == 1
+
+
+def test_object_preview_missing_file(db):
+    from django.template.loader import render_to_string
+    from wagtail.images import get_image_model
+    from wagtail.images.tests.utils import get_test_image_file
+
+    from wagtail_sidebyside.fields import IMAGE
+    from wagtail_sidebyside.templatetags.sidebyside_tags import object_preview
+
+    image = get_image_model().objects.create(
+        title="Fromage", file=get_test_image_file()
+    )
+    unit = type("Unit", (), {"kind": IMAGE, "source": image.pk})()
+    html = render_to_string(
+        "sidebyside/includes/object_preview.html", object_preview(unit)
+    )
+    assert 'class="sbs-object__image"' in html
+
+    image.file.storage.delete(image.file.name)
+    image.renditions.all().delete()
+    html = render_to_string(
+        "sidebyside/includes/object_preview.html", object_preview(unit)
+    )
+    assert "missing" in html and "Fromage" in html
