@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 (2026-11-17)
+
+- Show bullets and numbers of lists in the source column.
+
 ## 0.1.1 (2026-11-17)
 
 - Fix the LICENSE link in the README on PyPI.

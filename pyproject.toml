@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wagtail-sidebyside"
-version = "0.1.1"
+version = "0.1.2"
 description = "Translate Wagtail pages side by side: one main language, translations next to the source, optional AI."
 readme = "README.md"
 license = "MIT"

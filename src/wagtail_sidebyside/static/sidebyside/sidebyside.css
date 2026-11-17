@@ -128,6 +128,24 @@
     margin-bottom: 0;
 }
 
+/* Wagtail's admin CSS resets lists; show them as in the editor. */
+.sbs-source :is(ul, ol) {
+    margin: 0.5em 0;
+    padding-inline-start: 1.5em;
+}
+
+.sbs-source ul {
+    list-style: disc;
+}
+
+.sbs-source ol {
+    list-style: decimal;
+}
+
+.sbs-source li {
+    list-style: inherit;
+}
+
 .sbs-code {
     font-family: monospace;
     font-size: 0.875rem;
