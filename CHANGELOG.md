@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 (2026-11-17)
+
+- Fix the LICENSE link in the README on PyPI.
+- Update the GitHub Actions to their Node 24 versions.
+
 ## 0.1.0 (2026-11-17)
 
 First release.

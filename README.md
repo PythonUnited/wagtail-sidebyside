@@ -240,4 +240,4 @@ The demo uses a fake translator, so no API key is needed.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+MIT, see [LICENSE](https://github.com/PythonUnited/wagtail-sidebyside/blob/main/LICENSE).
