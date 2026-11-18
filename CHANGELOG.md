@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 (2026-11-18)
+
+- New status *Not started* for translations nothing was translated in yet.
+- Overview filters: all pages, pages with work, started translations with work.
+- README: early release disclaimer, back up database and media first.
+- Template tag `{% sidebyside_head %}` (`{% load sidebyside %}`): canonical and
+  `hreflang` links; an untranslated copy points its canonical to the source.
+
 ## 0.1.3 (2026-11-17)
 
 - Show a warning instead of an empty box when an image file is missing on the server.

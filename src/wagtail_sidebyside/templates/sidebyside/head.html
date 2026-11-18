@@ -1,0 +1,4 @@
+{% if canonical %}<link rel="canonical" href="{{ canonical }}">
+{% endif %}{% for code, url in alternates %}<link rel="alternate" hreflang="{{ code }}" href="{{ url }}">
+{% endfor %}{% if x_default %}<link rel="alternate" hreflang="x-default" href="{{ x_default }}">
+{% endif %}

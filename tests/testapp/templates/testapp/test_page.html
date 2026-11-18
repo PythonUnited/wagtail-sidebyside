@@ -1,8 +1,9 @@
-{% load wagtailcore_tags %}<!doctype html>
+{% load wagtailcore_tags sidebyside %}<!doctype html>
 <html lang="{{ page.locale.language_code }}">
 <head>
     <meta charset="utf-8">
     <title>{{ page.title }}</title>
+    {% sidebyside_head %}
     <style>
         body { font: 18px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
         blockquote { font-style: italic; border-left: 4px solid #f5c242; margin: 1rem 0; padding-left: 1rem; }

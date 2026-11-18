@@ -3,8 +3,17 @@
 > **Why this exists:** we built it because the existing translation solutions
 > for Wagtail were simply not good enough for us. Editors translated one string
 > at a time without seeing the page, saving and publishing were separate from
-> Wagtail's own flow, So we made the editor we wanted: the whole page,
+> Wagtail's own flow. So we made the editor we wanted: the whole page,
 > side by side, one save.
+>
+> **Early release, use at your own risk:** wagtail-sidebyside is young and so
+> far used on only a few sites, so expect bugs. It changes page content and
+> revisions, and removing wagtail-localize drops its tables. Make a backup of
+> your database and media before you install or upgrade it, and try it on a
+> copy of your site first. Bug reports are welcome in the
+> [issues](https://github.com/PythonUnited/wagtail-sidebyside/issues), and
+> [pull requests](https://github.com/PythonUnited/wagtail-sidebyside/pulls)
+> even more so.
 >
 > **Made with Claude:** this package was designed and written together with
 > [Claude Opus 5.5](https://www.anthropic.com/claude) (Anthropic), in Claude
@@ -99,6 +108,29 @@ class BlogPage(Page):
 ```
 
 Choice fields and blocks without text are copied from the source anyway.
+
+## Untranslated pages and SEO
+
+Every source page exists in every language. Until it is translated, a page
+shows the text of the source, and it follows every change to the source. So a
+site can start with only a few translated pages: the rest of the site,
+including menus and breadcrumbs, keeps working in the main language.
+
+Untranslated copies are duplicate content for search engines. Put this tag in
+the `<head>` of your base template, instead of your own canonical link:
+
+```django
+{% load sidebyside %}
+{% sidebyside_head %}
+```
+
+For a translation that was not started it renders a canonical link to the
+source page. For the source and the translated pages it renders the canonical
+link plus `hreflang` alternates for every live, translated version.
+
+In the admin, **Translations** shows *Not started* for these pages. The filter
+"Started translations with work" hides them, so editors see only the work on
+pages that are being translated.
 
 ## Machine translation
 

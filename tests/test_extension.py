@@ -3,6 +3,7 @@
 import pytest
 from django.http import HttpResponse
 from django.urls import reverse
+from django.utils import translation
 from wagtail import blocks, hooks
 
 from tests.test_translate import _english, _latest, _rows, pages  # noqa: F401
@@ -85,6 +86,7 @@ def test_custom_translator(admin, pages, settings):  # noqa: F811
     assert AIUsage.objects.this_month().input_tokens == 1
 
 
+@translation.override("en")
 def test_object_preview_missing_file(db):
     from django.template.loader import render_to_string
     from wagtail.images import get_image_model

@@ -10,12 +10,10 @@
 {% block content %}
     {% include "wagtailadmin/shared/header.html" with title=_("Translations") icon="globe" %}
     <div class="nice-padding">
-        <p>
-            {% if needs_work_only %}
-                <a class="button button-small button-secondary" href="?">{% trans "Show all pages" %}</a>
-            {% else %}
-                <a class="button button-small button-secondary" href="?work=1">{% trans "Only pages with work" %}</a>
-            {% endif %}
+        <p class="sbs-filters">
+            {% for value, label in filters %}
+                <a class="button button-small{% if value != show %} button-secondary{% endif %}" href="?show={{ value }}"{% if value == show %} aria-current="true"{% endif %}>{{ label }}</a>
+            {% endfor %}
         </p>
         {% if rows %}
             <table class="sbs-overview">

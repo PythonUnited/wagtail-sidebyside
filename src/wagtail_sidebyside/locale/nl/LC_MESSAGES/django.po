@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 12:27-0600\n"
+"POT-Creation-Date: 2026-11-18 02:13-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,19 +143,11 @@ msgstr "Kies een taal"
 msgid "Source"
 msgstr "Bron"
 
-#: templates/sidebyside/overview.html:15
-msgid "Show all pages"
-msgstr "Toon alle pagina's"
-
-#: templates/sidebyside/overview.html:17
-msgid "Only pages with work"
-msgstr "Alleen pagina's met werk"
-
-#: templates/sidebyside/overview.html:24
+#: templates/sidebyside/overview.html:22
 msgid "Page"
 msgstr "Pagina"
 
-#: templates/sidebyside/overview.html:44
+#: templates/sidebyside/overview.html:42
 msgid "All pages are translated."
 msgstr "Alle pagina's zijn vertaald."
 
@@ -544,38 +536,54 @@ msgstr "Automatisch vertalen is mislukt."
 msgid "The machine translation budget for this month is used up."
 msgstr "Het budget voor automatisch vertalen is deze maand op."
 
-#: use_cases/page_status.py:42
+#: use_cases/page_status.py:48
 msgid "Not created"
 msgstr "Niet aangemaakt"
 
-#: use_cases/page_status.py:45
+#: use_cases/page_status.py:50
+msgid "Not started"
+msgstr "Niet begonnen"
+
+#: use_cases/page_status.py:53
 #, python-format
 msgid "%(count)s outdated"
 msgstr "%(count)s verouderd"
 
-#: use_cases/page_status.py:47
+#: use_cases/page_status.py:55
 #, python-format
 msgid "%(count)s to do"
 msgstr "%(count)s te doen"
 
-#: use_cases/page_status.py:49
+#: use_cases/page_status.py:57
 #, python-format
 msgid "%(count)s to review"
 msgstr "%(count)s na te kijken"
 
-#: use_cases/page_status.py:50
+#: use_cases/page_status.py:58
 msgid "Translated"
 msgstr "Vertaald"
 
-#: views.py:101
+#: views.py:45
+msgid "All pages"
+msgstr "Alle pagina's"
+
+#: views.py:46
+msgid "Pages with work"
+msgstr "Pagina's met werk"
+
+#: views.py:47
+msgid "Started translations with work"
+msgstr "Begonnen vertalingen met werk"
+
+#: views.py:106
 msgid "The source page is not published yet. Publish both together."
 msgstr "De bronpagina is nog niet gepubliceerd. Publiceer ze samen."
 
-#: views.py:136
+#: views.py:141
 msgid "Source and translation published."
 msgstr "Bron en vertaling gepubliceerd."
 
-#: views.py:141
+#: views.py:146
 msgid ""
 "Translation published. What it takes over from the source's unpublished "
 "changes follows when the source is published."
@@ -583,26 +591,26 @@ msgstr ""
 "Vertaling gepubliceerd. Wat ze overneemt uit de ongepubliceerde wijzigingen "
 "van de bron, volgt zodra de bron gepubliceerd wordt."
 
-#: views.py:147
+#: views.py:152
 msgid "Translation published."
 msgstr "Vertaling gepubliceerd."
 
-#: views.py:149
+#: views.py:154
 msgid "Translation saved as draft."
 msgstr "Vertaling opgeslagen als concept."
 
-#: views.py:210
+#: views.py:215
 msgid "Nothing to translate."
 msgstr "Niets te vertalen."
 
-#: views.py:215
+#: views.py:220
 #, python-format
 msgid "%(count)s field translated by AI. Check it, then save."
 msgid_plural "%(count)s fields translated by AI. Check them, then save."
 msgstr[0] "%(count)s veld vertaald door AI. Controleer het en sla dan op."
 msgstr[1] "%(count)s velden vertaald door AI. Controleer ze en sla dan op."
 
-#: views.py:308
+#: views.py:313
 msgid "Connection works."
 msgstr "Verbinding werkt."
 

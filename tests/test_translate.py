@@ -628,10 +628,7 @@ class TestEditorHeader:
         profile.save()
         client.force_login(user)
         html = client.get(reverse("sidebyside:overview")).content.decode()
-        assert (
-            "Alleen pagina&#x27;s met werk" in html
-            or "Alleen pagina's met werk" in html
-        )
+        assert "Pagina&#x27;s met werk" in html or "Pagina's met werk" in html
 
 
 class TestTranslateScreenLayout:

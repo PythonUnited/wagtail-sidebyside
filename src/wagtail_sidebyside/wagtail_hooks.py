@@ -145,7 +145,7 @@ class TranslationsPanel(Component):
     order = 150
 
     def get_context_data(self, parent_context=None):
-        return {"rows": PageStatus.overview(needs_work_only=True)}
+        return {"rows": PageStatus.overview("work")}
 
 
 @hooks.register("construct_homepage_panels")

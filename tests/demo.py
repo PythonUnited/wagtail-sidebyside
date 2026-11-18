@@ -74,8 +74,14 @@ def create_content():
     )
     omelette.save_revision().publish()
 
-    # Translate some of the English pages, leave the rest to try.
-    for page in (home, recipes, omelette):
+    contact = home.add_child(
+        instance=TestPage(title="Contact", slug="contact", locale=fr)
+    )
+    contact.save_revision().publish()
+
+    # Translate some of the English pages, leave the rest to try (contact is
+    # not started: it shows the French text).
+    for page in (home, recipes, omelette, contact):
         SyncTree.create_translations(page)
     for page, values in (
         (home, {"title": "Laboratory", "slug": "laboratory"}),

@@ -472,6 +472,12 @@ a.sbs-badge:hover {
     color: #1d1d1d;
 }
 
+.sbs-badge--not_started {
+    border: 1px dashed var(--w-color-border-field-default);
+    background: transparent;
+    color: var(--w-color-text-meta);
+}
+
 .sbs-badge--missing {
     background: var(--w-color-critical-200);
     color: #fff;

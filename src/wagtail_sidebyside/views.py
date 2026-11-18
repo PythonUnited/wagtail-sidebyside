@@ -29,8 +29,8 @@ from .use_cases.translate_page import TranslatePage
 
 def overview(request):
     """All source pages with their translation status per language."""
-    needs_work_only = request.GET.get("work") == "1"
-    pages = PageStatus.overview(needs_work_only)
+    show = request.GET.get("show", "all")
+    pages = PageStatus.overview(show)
     min_depth = min((page.depth for page, _statuses in pages), default=0)
     return TemplateResponse(
         request,
@@ -40,7 +40,12 @@ def overview(request):
                 (page, page.depth - min_depth, statuses) for page, statuses in pages
             ],
             "locales": Locale.objects.exclude(pk=source_locale().id),
-            "needs_work_only": needs_work_only,
+            "show": show,
+            "filters": [
+                ("all", _("All pages")),
+                ("work", _("Pages with work")),
+                ("started", _("Started translations with work")),
+            ],
         },
     )
 
