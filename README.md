@@ -33,8 +33,9 @@ translation with AI.
 - **Knows what changed**: every field is *to do*, *done*, *outdated* (with a
   word diff of the source change) or *to review* (AI or reused text).
 - **Tree in sync**: new source pages get their translations; moving,
-  unpublishing and deleting cascade. A translation is never published ahead of
-  its source.
+  unpublishing and deleting cascade. A translation cannot be moved or deleted
+  on its own (it can be unpublished) and is never published ahead of its
+  source.
 - **AI** (optional): translate one field or all empty fields with Claude, with a
   glossary, house style instructions and a monthly budget.
 - **Built on Wagtail core i18n** (`Locale`, `TranslatableMixin`): no extra

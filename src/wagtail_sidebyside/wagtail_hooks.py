@@ -9,6 +9,7 @@ from wagtail.admin import messages
 from wagtail.admin import widgets as wagtailadmin_widgets
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.ui.components import Component
+from wagtail.models import Page
 
 from . import views
 from .conf import source_locale
@@ -86,6 +87,54 @@ def create_in_source_locale_only(request, parent_page, page_class):
 def create_translations(request, page):
     if SyncTree.is_source(page):
         SyncTree.create_translations(page, request.user)
+
+
+def _refuse_fixed_translations(request, pages):
+    """A translation follows its source page: moving or deleting it on its own
+    would put the language trees out of step. Refuse with a message."""
+    fixed = SyncTree.fixed_translations(pages)
+    if not fixed:
+        return None
+    page, source = fixed[0]
+    messages.error(
+        request,
+        _(
+            "'%(title)s' is a translation. Move or delete the %(language)s page "
+            "instead: its translations follow."
+        )
+        % {
+            "title": page.get_admin_display_title(),
+            "language": source.locale.get_display_name(),
+        },
+        buttons=[
+            messages.button(
+                reverse("wagtailadmin_pages:edit", args=[source.pk]),
+                _("Go to the %(language)s page")
+                % {"language": source.locale.get_display_name()},
+            )
+        ],
+    )
+    return redirect("wagtailadmin_explore", page.get_parent().pk)
+
+
+@hooks.register("before_move_page")
+def refuse_moving_translation(request, page, destination):
+    return _refuse_fixed_translations(request, [page])
+
+
+@hooks.register("before_delete_page")
+def refuse_deleting_translation(request, page):
+    return _refuse_fixed_translations(request, [page])
+
+
+@hooks.register("before_bulk_action")
+def refuse_bulk_move_or_delete_translations(
+    request, action_type, objects, action_class_instance
+):
+    pages = [obj for obj in objects if isinstance(obj, Page)]
+    if action_type in ("move", "delete") and pages:
+        return _refuse_fixed_translations(request, pages)
+    return None
 
 
 @hooks.register("construct_translated_pages_to_cascade_actions")

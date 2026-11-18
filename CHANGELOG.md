@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 (2026-11-18)
+
+- A translation can no longer be moved or deleted on its own (also not in bulk
+  actions): move or delete its source page, the translations follow.
+  Unpublishing a translation is still possible.
+
 ## 0.2.0 (2026-11-18)
 
 - New status *Not started* for translations nothing was translated in yet.

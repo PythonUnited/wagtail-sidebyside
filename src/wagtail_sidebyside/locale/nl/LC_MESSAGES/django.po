@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 02:13-0600\n"
+"POT-Creation-Date: 2026-11-18 02:47-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgstr "Geen document"
 
 #: templates/sidebyside/includes/translation_bar.html:4
 #: templates/sidebyside/overview.html:4 templates/sidebyside/overview.html:11
-#: wagtail_hooks.py:38
+#: wagtail_hooks.py:39
 msgid "Translations"
 msgstr "Vertalingen"
 
@@ -614,14 +614,14 @@ msgstr[1] "%(count)s velden vertaald door AI. Controleer ze en sla dan op."
 msgid "Connection works."
 msgstr "Verbinding werkt."
 
-#: wagtail_hooks.py:65
+#: wagtail_hooks.py:66
 #, python-format
 msgid "Create pages in %(language)s. Translations are created automatically."
 msgstr ""
 "Maak pagina's aan in de hoofdtaal (%(language)s). Vertalingen worden "
 "automatisch aangemaakt."
 
-#: wagtail_hooks.py:72
+#: wagtail_hooks.py:73
 #, python-format
 msgid ""
 "Pages are created in %(language)s, so you are now adding it there. The "
@@ -630,16 +630,30 @@ msgstr ""
 "Pagina's worden aangemaakt in %(language)s, dus je voegt hem nu daar toe. De"
 " vertaling wordt automatisch aangemaakt."
 
-#: wagtail_hooks.py:118
+#: wagtail_hooks.py:102
+#, python-format
+msgid ""
+"'%(title)s' is a translation. Move or delete the %(language)s page instead: "
+"its translations follow."
+msgstr ""
+"'%(title)s' is een vertaling. Verplaats of verwijder de bronpagina "
+"(%(language)s): de vertalingen gaan mee."
+
+#: wagtail_hooks.py:112
+#, python-format
+msgid "Go to the %(language)s page"
+msgstr "Naar de bronpagina (%(language)s)"
+
+#: wagtail_hooks.py:167
 #, python-format
 msgid "Translate: %(language)s"
 msgstr "Vertalen: %(language)s"
 
-#: wagtail_hooks.py:133
+#: wagtail_hooks.py:182
 #, python-format
 msgid "%(language)s translation: %(status)s."
 msgstr "Vertaling (%(language)s): %(status)s."
 
-#: wagtail_hooks.py:138
+#: wagtail_hooks.py:187
 msgid "Translate"
 msgstr "Vertalen"

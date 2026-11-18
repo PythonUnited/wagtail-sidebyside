@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 02:13-0600\n"
+"POT-Creation-Date: 2026-11-18 02:47-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,7 +132,7 @@ msgstr "Pas de document"
 
 #: templates/sidebyside/includes/translation_bar.html:4
 #: templates/sidebyside/overview.html:4 templates/sidebyside/overview.html:11
-#: wagtail_hooks.py:38
+#: wagtail_hooks.py:39
 msgid "Translations"
 msgstr "Traductions"
 
@@ -618,14 +618,14 @@ msgstr[1] ""
 msgid "Connection works."
 msgstr "La connexion fonctionne."
 
-#: wagtail_hooks.py:65
+#: wagtail_hooks.py:66
 #, python-format
 msgid "Create pages in %(language)s. Translations are created automatically."
 msgstr ""
 "Créez les pages dans la langue principale (%(language)s). Les traductions "
 "sont créées automatiquement."
 
-#: wagtail_hooks.py:72
+#: wagtail_hooks.py:73
 #, python-format
 msgid ""
 "Pages are created in %(language)s, so you are now adding it there. The "
@@ -634,16 +634,30 @@ msgstr ""
 "Les pages sont créées en %(language)s : vous l'ajoutez donc là. La "
 "traduction est créée automatiquement."
 
-#: wagtail_hooks.py:118
+#: wagtail_hooks.py:102
+#, python-format
+msgid ""
+"'%(title)s' is a translation. Move or delete the %(language)s page instead: "
+"its translations follow."
+msgstr ""
+"'%(title)s' est une traduction. Déplacez ou supprimez plutôt la page source "
+"(%(language)s) : ses traductions suivent."
+
+#: wagtail_hooks.py:112
+#, python-format
+msgid "Go to the %(language)s page"
+msgstr "Aller à la page source (%(language)s)"
+
+#: wagtail_hooks.py:167
 #, python-format
 msgid "Translate: %(language)s"
 msgstr "Traduire : %(language)s"
 
-#: wagtail_hooks.py:133
+#: wagtail_hooks.py:182
 #, python-format
 msgid "%(language)s translation: %(status)s."
 msgstr "Traduction (%(language)s) : %(status)s."
 
-#: wagtail_hooks.py:138
+#: wagtail_hooks.py:187
 msgid "Translate"
 msgstr "Traduire"

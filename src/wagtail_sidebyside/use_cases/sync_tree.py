@@ -75,6 +75,21 @@ class SyncTree:
                 logger.exception("Could not update translation %s", target_page.pk)
 
     @staticmethod
+    def fixed_translations(pages) -> list[tuple[Page, Page]]:
+        """(translation, source) for the translations in pages that may not be
+        moved or deleted on their own: they follow their source page. A
+        translation whose source is in pages too goes along with it."""
+        ids = {page.pk for page in pages}
+        fixed = []
+        for page in pages:
+            if SyncTree.is_source(page) or page.is_root():
+                continue
+            source = page.get_translation_or_none(source_locale())
+            if source is not None and source.pk not in ids:
+                fixed.append((page, source))
+        return fixed
+
+    @staticmethod
     def cascade(pages: list[Page]) -> dict:
         """Translations that follow a source page when it is moved, deleted or
         unpublished (Wagtail's construct_translated_pages_to_cascade_actions)."""
