@@ -1,13 +1,14 @@
-"""Which parts of a page are translatable, and how to write translations back.
+"""Which parts of a page or snippet are translatable, and how to write
+translations back.
 
-A page is flattened into units: one per translatable text (page field or
+An object is flattened into units: one per translatable text (model field or
 StreamField leaf block), keyed by a stable path such as "title" or
 "body.<block-id>.caption", plus one per image or document, which follows the
 source unless the translation picks its own. Everything else (choices, plugin
-config, ...) is copied from the source page when a translation is saved.
+config, ...) is copied from the source when a translation is saved.
 
-Fields listed in a page model's `translation_exclude` always come from the
-source, e.g. translation_exclude = ["header_image"].
+Fields listed in a model's `translation_exclude` always come from the source,
+e.g. translation_exclude = ["header_image"].
 """
 
 import difflib
@@ -16,13 +17,17 @@ from dataclasses import dataclass
 
 from django.db import models
 from django.utils.text import capfirst
+from django.utils.translation import gettext as _
 from wagtail import blocks, hooks
+from wagtail.contrib.typed_table_block.blocks import BaseTypedTableBlock
 from wagtail.documents import get_document_model
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images import get_image_model
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Page
+
+from . import objects
 
 TEXT = "text"
 TEXTAREA = "textarea"
@@ -60,13 +65,13 @@ class Unit:
     section: str = CONTENT
 
 
-def page_units(page: Page, align_to: Page | None = None) -> list[Unit]:
-    """Units of page. With align_to, StreamField blocks get the paths of the
-    matching blocks in align_to (see _align)."""
+def page_units(obj, align_to=None) -> list[Unit]:
+    """Units of a page or snippet. With align_to, StreamField blocks get the
+    paths of the matching blocks in align_to (see _align)."""
     units = []
-    tabs = _panel_tabs(type(page))
-    for field in _translatable_fields(page):
-        value = getattr(page, field.name)
+    tabs = _panel_tabs(type(obj))
+    for field in _translatable_fields(obj):
+        value = getattr(obj, field.name)
         label = capfirst(field.verbose_name)
         count = len(units)
         if isinstance(field, StreamField):
@@ -77,11 +82,15 @@ def page_units(page: Page, align_to: Page | None = None) -> list[Unit]:
                 )
             _walk(field.stream_block, raw, field.name, label, units, {})
         elif isinstance(field, models.ForeignKey):
-            object_id = getattr(page, field.attname)
+            object_id = getattr(obj, field.attname)
             units.append(
                 Unit(field.name, label, _field_kind(field), str(object_id or ""))
             )
-        elif value or field.name in PAGE_FIELDS or tabs.get(field.name, 0) > 0:
+        elif (
+            value
+            or (objects.is_page(obj) and field.name in PAGE_FIELDS)
+            or tabs.get(field.name, 0) > 0
+        ):
             units.append(
                 Unit(
                     field.name,
@@ -97,16 +106,16 @@ def page_units(page: Page, align_to: Page | None = None) -> list[Unit]:
     return units
 
 
-def page_texts(page: Page, align_to: Page | None = None) -> dict[str, str]:
+def page_texts(obj, align_to=None) -> dict[str, str]:
     """path -> value of every unit: texts, and image/document ids."""
     return {
         unit.path: unit.source
-        for unit in page_units(page, align_to)
+        for unit in page_units(obj, align_to)
         if unit.kind != SYNCED
     }
 
 
-def apply_translations(source: Page, target: Page, values: dict[str, str]) -> Page:
+def apply_translations(source, target, values: dict[str, str]):
     """Make target a copy of source, with values (path -> text) replacing the
     source text of translated units. Untranslated units keep the source text."""
     translatable = {field.name for field in _translatable_fields(source)}
@@ -143,23 +152,28 @@ def apply_translations(source: Page, target: Page, values: dict[str, str]) -> Pa
     return target
 
 
-def _content_fields(page: Page):
-    """Page fields plus all fields of the specific page model."""
-    yield from (page._meta.get_field(name) for name in PAGE_FIELDS + SYNCED_PAGE_FIELDS)
-    for field in page._meta.concrete_fields:
-        if field.model is not Page and not field.primary_key:
+def _content_fields(obj):
+    """A page: the Page fields above plus all fields of the specific page
+    model. A snippet: its fields, without the state of Wagtail's mixins."""
+    if objects.is_page(obj):
+        names = PAGE_FIELDS + SYNCED_PAGE_FIELDS
+        yield from (obj._meta.get_field(name) for name in names)
+    for field in obj._meta.concrete_fields:
+        if field.primary_key or field.model is Page:
+            continue
+        if objects.is_page(obj) or field.name not in objects.MIXIN_FIELDS:
             yield field
 
 
-def _translatable_fields(page: Page):
-    """Translatable fields in the order of the page editor's panels (fields
+def _translatable_fields(obj):
+    """Translatable fields in the order of the editor's panels (fields
     without a panel last)."""
-    exclude = set(getattr(page, "translation_exclude", []))
-    order = _panel_order(type(page))
+    exclude = set(getattr(obj, "translation_exclude", []))
+    order = _panel_order(type(obj))
     fields = [
         field
-        for field in _content_fields(page)
-        if field.name in PAGE_FIELDS
+        for field in _content_fields(obj)
+        if (objects.is_page(obj) and field.name in PAGE_FIELDS)
         or (field.name not in exclude and _is_translatable(field))
     ]
     return sorted(fields, key=lambda field: order.get(field.name, len(order)))
@@ -167,21 +181,21 @@ def _translatable_fields(page: Page):
 
 @functools.cache
 def _panel_order(model) -> dict[str, int]:
-    """Field name -> position in the page editor (tabs and panels in order)."""
+    """Field name -> position in the editor (tabs and panels in order)."""
     names = [name for tab in _editor_tabs(model) for name in tab]
     return {name: index for index, name in enumerate(names)}
 
 
 @functools.cache
 def _panel_tabs(model) -> dict[str, int]:
-    """Field name -> index of its tab in the page editor."""
+    """Field name -> index of its tab in the editor."""
     return {
         name: index for index, tab in enumerate(_editor_tabs(model)) for name in tab
     }
 
 
 def _editor_tabs(model) -> list[list[str]]:
-    """Field names per tab of the page editor, in order."""
+    """Field names per tab of the editor, in order."""
 
     def walk(panel):
         if getattr(panel, "field_name", None):
@@ -189,7 +203,7 @@ def _editor_tabs(model) -> list[list[str]]:
         for child in getattr(panel, "children", []):
             yield from walk(child)
 
-    return [list(walk(tab)) for tab in model.get_edit_handler().children]
+    return [list(walk(tab)) for tab in objects.editor_tabs(model)]
 
 
 def _is_translatable(field) -> bool:
@@ -305,14 +319,86 @@ def _walk(block, raw, path: str, label: str, units: list, values: dict):
             for name, value in raw.items()
         }
 
-    kind = _block_kind(block)
+    if isinstance(block, BaseTypedTableBlock):
+        return _walk_table(block, raw or {}, path, label, units, values)
+
+    return _leaf(
+        _block_kind(block),
+        raw,
+        path,
+        label,
+        units,
+        values,
+        getattr(block, "features", None),
+    )
+
+
+def _leaf(kind, raw, path: str, label: str, units: list, values: dict, features=None):
+    """Collect a Unit for a translatable leaf value and return it, replaced by
+    values[path] where given."""
     if kind in CHOOSER_KINDS:
         units.append(Unit(path, label, kind, "" if raw is None else str(raw)))
         return int(values[path]) if values.get(path) else raw
     if kind is None or not isinstance(raw, str) or not raw.strip():
         return raw
-    units.append(Unit(path, label, kind, raw, getattr(block, "features", None)))
+    units.append(Unit(path, label, kind, raw, features))
     return values.get(path, raw)
+
+
+def _walk_table(block, raw: dict, path: str, label: str, units: list, values: dict):
+    """A typed table (wagtail.contrib.typed_table_block): the column headings,
+    the cells and the caption. Rows and columns have no ids, so their paths
+    are positions: a row inserted in the source shifts the cells after it,
+    which then show up as outdated (their source text changed)."""
+    columns = raw.get("columns") or []
+    column_label, row_label, caption_label = _("Column"), _("Row"), _("Caption")
+    headings = []
+    result_columns = []
+    for index, column_data in enumerate(columns):
+        headings.append(column_data.get("heading") or f"{column_label} {index + 1}")
+        heading = _leaf(
+            TEXT,
+            column_data.get("heading") or "",
+            f"{path}.columns.{index}",
+            f"{label} > {headings[index]}",
+            units,
+            values,
+        )
+        result_columns.append({**column_data, "heading": heading})
+
+    result_rows = []
+    for row_index, row in enumerate(raw.get("rows") or []):
+        cells = []
+        for index, value in enumerate(row.get("values") or []):
+            child_block = (
+                block.child_blocks.get(columns[index]["type"])
+                if index < len(columns)
+                else None
+            )
+            if child_block is None:
+                cells.append(value)
+                continue
+            cells.append(
+                _walk(
+                    child_block,
+                    value,
+                    f"{path}.rows.{row_index}.{index}",
+                    f"{label} > {row_label} {row_index + 1} > {headings[index]}",
+                    units,
+                    values,
+                )
+            )
+        result_rows.append({**row, "values": cells})
+
+    caption = _leaf(
+        TEXT,
+        raw.get("caption") or "",
+        f"{path}.caption",
+        f"{label} > {caption_label}",
+        units,
+        values,
+    )
+    return {**raw, "columns": result_columns, "rows": result_rows, "caption": caption}
 
 
 def _align(block, source, target):

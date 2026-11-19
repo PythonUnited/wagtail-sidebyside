@@ -173,7 +173,7 @@ class TestTranslatePage:
         statuses = {row.unit.path: row.status for row in _rows(source, target)}
         assert statuses["hero_title"] == DONE
         assert statuses["title"] == TODO
-        assert TranslationState.objects.for_page(target) is None
+        assert TranslationState.objects.for_object(target) is None
 
     def test_source_of(self, pages):
         source, target = pages
@@ -253,7 +253,7 @@ class TestPageStatus:
 
         source, target = pages
         _save(source, target, {"title": "Home", "body.h1": "Cheese omelette"})
-        (status,) = PageStatus.for_page(source)
+        (status,) = PageStatus.for_object(source)
         assert status.locale.language_code == "en"
         assert status.state == TODO
         assert status.outdated == 0
@@ -263,7 +263,9 @@ class TestPageStatus:
         from wagtail_sidebyside.use_cases.page_status import PageStatus
 
         source, target = pages
-        page_ids = [page.pk for page, _statuses in PageStatus.overview()]
+        page_ids = [
+            row.source.pk for section in PageStatus.overview() for row in section.rows
+        ]
         assert source.pk in page_ids
         assert target.pk not in page_ids
 
@@ -628,7 +630,7 @@ class TestEditorHeader:
         profile.save()
         client.force_login(user)
         html = client.get(reverse("sidebyside:overview")).content.decode()
-        assert "Pagina&#x27;s met werk" in html or "Pagina's met werk" in html
+        assert "Nog te doen" in html
 
 
 class TestTranslateScreenLayout:
@@ -1200,7 +1202,7 @@ class TestNeverAheadOfSource:
         assert live.title == "Home"
         assert live.theme == "teal"  # the published source, not its draft
         assert _latest(target).theme == "night"
-        assert TranslationState.objects.for_page(target).awaiting_source
+        assert TranslationState.objects.for_object(target).awaiting_source
 
         # Publishing the source publishes the waiting translation draft.
         TestPage.objects.get(pk=source.pk).get_latest_revision().publish()

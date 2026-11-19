@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     "wagtail_sidebyside",
     "tests.testapp",
     "wagtail.contrib.settings",
+    "wagtail.contrib.typed_table_block",
     "wagtail.locales",
     "wagtail.embeds",
     "wagtail.sites",

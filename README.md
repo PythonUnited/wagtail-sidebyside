@@ -19,8 +19,8 @@
 > [Claude Opus 5.5](https://www.anthropic.com/claude) (Anthropic), in Claude
 > Code, by a developer at [PythonUnited](https://github.com/PythonUnited).
 
-Translate Wagtail pages side by side. One main language, every other language
-is a translation of it. The editor sees the source next to the translation,
+Translate Wagtail pages and snippets side by side. One main language, every
+other language is a translation of it. The editor sees the source next to the translation,
 field by field, and saves or publishes the whole page at once. Optional machine
 translation with AI.
 
@@ -41,9 +41,9 @@ translation with AI.
 - **Built on Wagtail core i18n** (`Locale`, `TranslatableMixin`): no extra
   translation tables, no monkey patching. Extend it with hooks.
 
-| The source page | All translations |
+| The source page | All translations: pages and snippets |
 | --- | --- |
-| ![Translation bar on the source page](https://raw.githubusercontent.com/PythonUnited/wagtail-sidebyside/main/docs/screenshots/source.png) | ![Overview of all pages and their translation status](https://raw.githubusercontent.com/PythonUnited/wagtail-sidebyside/main/docs/screenshots/overview.png) |
+| ![Translation bar on the source page](https://raw.githubusercontent.com/PythonUnited/wagtail-sidebyside/main/docs/screenshots/source.png) | ![Overview of all pages and snippets and their translation status](https://raw.githubusercontent.com/PythonUnited/wagtail-sidebyside/main/docs/screenshots/overview.png) |
 
 Live preview while translating:
 
@@ -110,6 +110,36 @@ class BlogPage(Page):
 
 Choice fields and blocks without text are copied from the source anyway.
 
+## Snippets
+
+Snippets are translated the same way as pages: give the model
+`TranslatableMixin` and register it as a snippet.
+
+```python
+from wagtail.models import TranslatableMixin
+from wagtail.snippets.models import register_snippet
+
+
+@register_snippet
+class Footer(TranslatableMixin, models.Model):
+    text = RichTextField()
+
+    class Meta(TranslatableMixin.Meta):
+        pass
+```
+
+A snippet is created in the main language; its translations are created along
+with it, and are deleted along with it. A translation opens in the
+side-by-side screen, and cannot be deleted on its own. A snippet without
+`DraftStateMixin` is live when saved, so its translations follow every save;
+with drafts, they follow when it is published, as pages do. `RevisionMixin`,
+`DraftStateMixin`, `LockableMixin` and `PreviewableMixin` work as in Wagtail's
+own snippet editor. **Translations** lists the snippets per model, after the
+pages.
+
+Tables (`wagtail.contrib.typed_table_block`) are translated cell by cell, with
+their column headings and caption.
+
 ## Untranslated pages and SEO
 
 Every source page exists in every language. Until it is translated, a page
@@ -130,8 +160,8 @@ source page. For the source and the translated pages it renders the canonical
 link plus `hreflang` alternates for every live, translated version.
 
 In the admin, **Translations** shows *Not started* for these pages. The filter
-"Started translations with work" hides them, so editors see only the work on
-pages that are being translated.
+"In progress" hides them, so editors see only the work on pages that are being
+translated; "Needs work" includes them.
 
 ## Machine translation
 
@@ -269,7 +299,8 @@ uv run pytest
 uv run python -m tests.demo   # demo site on http://localhost:8000/cms/ (admin/admin)
 ```
 
-The demo uses a fake translator, so no API key is needed.
+The demo uses a fake translator, so no API key is needed. The screenshots in
+this README are made from it with `tests/screenshots.py` (see there).
 
 ## License
 

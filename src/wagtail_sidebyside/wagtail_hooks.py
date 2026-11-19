@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from django.shortcuts import redirect
 from django.templatetags.static import static
 from django.urls import include, path, reverse
@@ -9,9 +10,9 @@ from wagtail.admin import messages
 from wagtail.admin import widgets as wagtailadmin_widgets
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.ui.components import Component
-from wagtail.models import Page
+from wagtail.models import Locale, Page
 
-from . import views
+from . import objects, views
 from .conf import source_locale
 from .use_cases.page_status import PageStatus
 from .use_cases.sync_tree import SyncTree
@@ -28,6 +29,16 @@ def register_admin_urls():
             "<int:page_id>/<str:locale_code>/preview/",
             views.TranslationPreview.as_view(),
             name="preview",
+        ),
+        path(
+            "snippet/<str:app_label>/<str:model_name>/<str:pk>/<str:locale_code>/",
+            views.translate_snippet,
+            name="translate_snippet",
+        ),
+        path(
+            "snippet/<str:app_label>/<str:model_name>/<str:pk>/<str:locale_code>/preview/",
+            views.TranslationPreview.as_view(),
+            name="preview_snippet",
         ),
     ]
     return [path("sidebyside/", include((urls, "sidebyside"), namespace="sidebyside"))]
@@ -89,32 +100,32 @@ def create_translations(request, page):
         SyncTree.create_translations(page, request.user)
 
 
-def _refuse_fixed_translations(request, pages):
-    """A translation follows its source page: moving or deleting it on its own
-    would put the language trees out of step. Refuse with a message."""
-    fixed = SyncTree.fixed_translations(pages)
+def _refuse_fixed_translations(request, items):
+    """A translation follows its source: moving or deleting it on its own
+    would put the languages out of step. Refuse with a message."""
+    fixed = SyncTree.fixed_translations(items)
     if not fixed:
         return None
-    page, source = fixed[0]
-    messages.error(
-        request,
-        _(
+    item, source = fixed[0]
+    language = {"language": source.locale.get_display_name()}
+    if objects.is_page(item):
+        message = _(
             "'%(title)s' is a translation. Move or delete the %(language)s page "
             "instead: its translations follow."
         )
-        % {
-            "title": page.get_admin_display_title(),
-            "language": source.locale.get_display_name(),
-        },
-        buttons=[
-            messages.button(
-                reverse("wagtailadmin_pages:edit", args=[source.pk]),
-                _("Go to the %(language)s page")
-                % {"language": source.locale.get_display_name()},
-            )
-        ],
+        button = _("Go to the %(language)s page") % language
+    else:
+        message = _(
+            "'%(title)s' is a translation. Delete the %(language)s version "
+            "instead: its translations follow."
+        )
+        button = _("Go to the %(language)s version") % language
+    messages.error(
+        request,
+        message % {"title": objects.title(item), **language},
+        buttons=[messages.button(objects.edit_url(source), button)],
     )
-    return redirect("wagtailadmin_explore", page.get_parent().pk)
+    return redirect(objects.listing_url(item))
 
 
 @hooks.register("before_move_page")
@@ -137,6 +148,61 @@ def refuse_bulk_move_or_delete_translations(
     return None
 
 
+@hooks.register("before_edit_snippet")
+def redirect_snippet_translation_to_side_by_side(request, instance):
+    if not objects.is_translatable_snippet(type(instance)):
+        return None
+    source = TranslatePage.source_of(instance)
+    if source is None:
+        return None
+    return redirect(objects.translate_url(source, instance.locale))
+
+
+@hooks.register("before_create_snippet")
+def create_snippets_in_source_locale_only(request, model):
+    """As pages: created in the source language, translations follow."""
+    if not objects.is_translatable_snippet(model):
+        return None
+    locale = source_locale()
+    code = request.GET.get("locale") or Locale.get_default().language_code
+    if code == locale.language_code:
+        return None
+    messages.info(
+        request,
+        _(
+            "This is created in %(language)s, so you are now adding it there. "
+            "The translations are created automatically."
+        )
+        % {"language": locale.get_display_name()},
+    )
+    query = QueryDict(mutable=True)
+    query.update(request.GET)
+    query["locale"] = locale.language_code
+    return redirect(f"{request.path}?{query.urlencode()}")
+
+
+@hooks.register("before_delete_snippet")
+def refuse_deleting_snippet_translation(request, instances):
+    if not instances or not objects.is_translatable_snippet(type(instances[0])):
+        return None
+    return _refuse_fixed_translations(request, instances)
+
+
+@hooks.register("register_snippet_listing_buttons")
+def translate_snippet_listing_buttons(snippet, user, next_url=None):
+    if not objects.is_translatable_snippet(type(snippet)):
+        return
+    if not SyncTree.is_source(snippet):
+        return
+    for locale in PageStatus.target_locales(snippet):
+        yield wagtailadmin_widgets.Button(
+            _("Translate: %(language)s") % {"language": locale.get_display_name()},
+            objects.translate_url(snippet, locale),
+            icon_name="globe",
+            priority=60,
+        )
+
+
 @hooks.register("construct_translated_pages_to_cascade_actions")
 def cascade_to_translations(pages, action):
     # Wagtail moves, deletes or unpublishes these along with the source page.
@@ -149,7 +215,7 @@ def translate_header_buttons(page, user, view_name, next_url=None):
     # templates/wagtailadmin/pages/edit.html.
     if view_name == "edit" or not SyncTree.is_source(page):
         return
-    for status in PageStatus.for_page(page):
+    for status in PageStatus.for_object(page):
         yield wagtailadmin_widgets.Button(
             f"{status.locale.get_display_name()}: {status.label}",
             status.url,
@@ -175,7 +241,7 @@ def translate_listing_buttons(page, user, next_url=None):
 def warn_about_translation_work(request, page):
     if not SyncTree.is_source(page):
         return
-    for status in PageStatus.for_page(page):
+    for status in PageStatus.for_object(page):
         if status.target is not None and status.needs_work:
             messages.warning(
                 request,
@@ -194,7 +260,8 @@ class TranslationsPanel(Component):
     order = 150
 
     def get_context_data(self, parent_context=None):
-        return {"rows": PageStatus.overview("work")}
+        sections = PageStatus.overview("work")
+        return {"rows": [row for section in sections for row in section.rows]}
 
 
 @hooks.register("construct_homepage_panels")

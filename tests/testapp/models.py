@@ -1,9 +1,17 @@
 from django.db import models
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
-from wagtail.fields import StreamField
+from wagtail.contrib.typed_table_block.blocks import TypedTableBlock
+from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.models import Page
+from wagtail.models import (
+    DraftStateMixin,
+    LockableMixin,
+    Page,
+    RevisionMixin,
+    TranslatableMixin,
+)
+from wagtail.snippets.models import register_snippet
 
 
 class ImageBlock(blocks.StructBlock):
@@ -20,6 +28,11 @@ class ChartBlock(blocks.StructBlock):
         template = "testapp/chart_block.html"
 
 
+class TableBlock(TypedTableBlock):
+    text = blocks.CharBlock()
+    image = ImageChooserBlock()
+
+
 class ContentBlocks(blocks.StreamBlock):
     heading = blocks.CharBlock()
     paragraph = blocks.TextBlock()
@@ -27,6 +40,7 @@ class ContentBlocks(blocks.StreamBlock):
     quote = blocks.BlockQuoteBlock()
     image = ImageBlock()
     chart = ChartBlock()
+    table = TableBlock()
 
 
 class Body(ContentBlocks):
@@ -58,3 +72,36 @@ class TestPage(Page):
         FieldPanel("theme"),
         FieldPanel("body"),
     ]
+
+
+@register_snippet
+class Footer(TranslatableMixin, models.Model):
+    """A snippet without drafts: saved is live."""
+
+    heading = models.CharField(max_length=255)
+    text = RichTextField(blank=True)
+    colour = models.CharField(
+        max_length=20, choices=[("dark", "Dark"), ("light", "Light")], default="dark"
+    )
+
+    class Meta(TranslatableMixin.Meta):
+        pass
+
+    def __str__(self):
+        return self.heading
+
+
+@register_snippet
+class Notice(
+    TranslatableMixin, DraftStateMixin, RevisionMixin, LockableMixin, models.Model
+):
+    """A snippet with drafts and revisions."""
+
+    text = models.CharField(max_length=255)
+    body = StreamField(ContentBlocks, blank=True)
+
+    class Meta(TranslatableMixin.Meta):
+        pass
+
+    def __str__(self):
+        return self.text

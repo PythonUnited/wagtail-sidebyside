@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.3.0 (2026-11-19)
+
+- Snippets: models with `TranslatableMixin` registered as a snippet are
+  translated side by side too, created, kept in step and deleted along with
+  their source. Overview and dashboard list them per model.
+- Tables (`TypedTableBlock`): column headings, cells and caption are
+  translatable (they were copied from the source).
+- Saving uses Wagtail's own create and edit actions.
+- Rich text in the source column is a read-only editor, so it looks exactly
+  like the translation's editor (link types, anchors, images) instead of the
+  rendered site HTML.
+- Overview: one table, the snippets per model after the pages. Filters
+  renamed to *All*, *Needs work* and *In progress*.
+- New README screenshots, made from the demo with `tests/screenshots.py`.
+- Narrow screens: a long field label no longer pushes the status and the AI
+  button out of view; columns shrink instead of widening the page.
+- Migration `0008`: the translation state refers to its page or snippet by
+  content type and id. Existing states are kept.
+
 ## 0.2.1 (2026-11-18)
 
 - A translation can no longer be moved or deleted on its own (also not in bulk

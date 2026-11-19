@@ -1,23 +1,28 @@
+from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
+from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from wagtail import hooks
 from wagtail.admin import messages
 from wagtail.admin.action_menu import PageActionMenu
+from wagtail.admin.rich_text import get_rich_text_editor_widget
 from wagtail.admin.ui.components import MediaContainer
 from wagtail.admin.ui.side_panels import (
     ChecksSidePanel,
     PageStatusSidePanel,
     PreviewSidePanel,
 )
-from wagtail.admin.views.pages.preview import PreviewOnEditView
+from wagtail.admin.views.generic.preview import PreviewOnEdit
 from wagtail.models import Locale, Page
+from wagtail.snippets.action_menu import SnippetActionMenu
 
 from . import action_menu as footer_actions
+from . import objects
 from .conf import source_locale
 from .forms import COPIED_PREFIX, TranslationForm
 from .translators import TranslationError
@@ -28,23 +33,21 @@ from .use_cases.translate_page import TranslatePage
 
 
 def overview(request):
-    """All source pages with their translation status per language."""
+    """All source pages and snippets with their translation status per
+    language."""
     show = request.GET.get("show", "all")
-    pages = PageStatus.overview(show)
-    min_depth = min((page.depth for page, _statuses in pages), default=0)
     return TemplateResponse(
         request,
         "sidebyside/overview.html",
         {
-            "rows": [
-                (page, page.depth - min_depth, statuses) for page, statuses in pages
-            ],
+            "sections": PageStatus.overview(show),
             "locales": Locale.objects.exclude(pk=source_locale().id),
             "show": show,
             "filters": [
-                ("all", _("All pages")),
-                ("work", _("Pages with work")),
-                ("started", _("Started translations with work")),
+                ("all", _("All")),
+                ("work", _("Needs work")),
+                # Needs work, without the translations that were not started.
+                ("started", _("In progress")),
             ],
         },
     )
@@ -53,20 +56,30 @@ def overview(request):
 def translate(request, page_id, locale_code):
     """Side-by-side translation of source page page_id into locale_code."""
     source_page = get_object_or_404(Page, pk=page_id).specific
+    return _translate(request, source_page, locale_code)
+
+
+def translate_snippet(request, app_label, model_name, pk, locale_code):
+    """Side-by-side translation of a source snippet into locale_code."""
+    source = objects.get_snippet(app_label, model_name, unquote(pk))
+    return _translate(request, source, locale_code)
+
+
+def _translate(request, source_page, locale_code):
+    """source_page: a (specific) source page or snippet."""
     locale = get_object_or_404(Locale, language_code=locale_code)
     target_page = source_page.get_translation_or_none(locale)
     if target_page is None:
         return _create(request, source_page, locale)
 
-    target_page = target_page.specific
-    permissions = target_page.permissions_for_user(request.user)
-    if not permissions.can_edit():
+    target_page = objects.specific(target_page)
+    if not objects.can(request.user, target_page, "change"):
         raise PermissionDenied
-    lock = target_page.get_lock()
+    lock = objects.lock(target_page)
     locked = bool(lock and lock.for_user(request.user))
 
-    source = source_page.get_latest_revision_as_object()
-    target = target_page.get_latest_revision_as_object()
+    source = objects.latest(source_page)
+    target = objects.latest(target_page)
     rows = TranslatePage.rows(source, target)
     form = TranslationForm(rows, request.POST if request.method == "POST" else None)
     ai_available = MachineTranslate.available() and not locked
@@ -89,17 +102,16 @@ def translate(request, page_id, locale_code):
     elif request.method == "POST" and not locked and form.is_valid():
         publish = "action-publish" in request.POST
         together = "action-publish-together" in request.POST
-        if (publish or together) and not permissions.can_publish():
-            raise PermissionDenied
-        if (
-            together
-            and not source_page.permissions_for_user(request.user).can_publish()
+        if (publish or together) and not objects.can(
+            request.user, target_page, "publish"
         ):
+            raise PermissionDenied
+        if together and not objects.can(request.user, source_page, "publish"):
             raise PermissionDenied
         # A translation is never ahead of its source: with a newer source
         # draft, it is published against the published source (source_page,
         # loaded from the database, is the live version).
-        source_pending = source_page.has_unpublished_changes
+        source_pending = objects.has_unpublished_changes(source_page)
         if publish and source_pending and not source_page.live:
             messages.error(
                 request,
@@ -150,27 +162,33 @@ def translate(request, page_id, locale_code):
                 )
             elif publish:
                 messages.success(request, _("Translation published."))
-            else:
+            elif objects.has_drafts(target_page):
                 messages.success(request, _("Translation saved as draft."))
+            else:
+                messages.success(request, _("Translation saved."))
             return redirect(request.path)
 
-    action_menu = PageActionMenu(
-        request, view="edit", page=target_page, lock=lock, locked_for_user=locked
-    )
+    action_menu = _action_menu(request, target_page, lock, locked)
     footer_actions.adapt(action_menu, source_page, request.user)
     done, total = TranslatePage.progress(rows)
     orphans = TranslatePage.orphans(source, target)
     history_url = None
-    if permissions.can_view_revisions():
-        history_url = reverse("wagtailadmin_pages:history", args=[target_page.pk])
+    if objects.can_view_history(request.user, target_page):
+        history_url = objects.history_url(target_page)
     return TemplateResponse(
         request,
         "sidebyside/translate.html",
         {
             "source_page": source_page,
             "target_page": target_page,
+            "is_page": objects.is_page(target_page),
+            "title": objects.title(target_page),
+            "breadcrumbs_items": _breadcrumbs(target_page),
+            "source_pending": objects.has_unpublished_changes(source_page),
             "locale": locale,
             "form": form,
+            # The editor also for the read-only rich text of the source.
+            "media": form.media + get_rich_text_editor_widget().media,
             "done": done,
             "total": total,
             "counts": {
@@ -226,10 +244,42 @@ def _machine_translate(request, form, rows, which, source_page, locale):
     return form.with_translations(translations)
 
 
+def _breadcrumbs(target):
+    """A snippet's header (a page has its own): listing > snippet."""
+    if objects.is_page(target):
+        return None
+    return [
+        {
+            "url": objects.listing_url(target),
+            "label": capfirst(target._meta.verbose_name_plural),
+        },
+        {"url": "", "label": objects.title(target)},
+    ]
+
+
+def _action_menu(request, target, lock, locked):
+    """Wagtail's own action menu of the page or snippet editor."""
+    if objects.is_page(target):
+        return PageActionMenu(
+            request, view="edit", page=target, lock=lock, locked_for_user=locked
+        )
+    return SnippetActionMenu(
+        request, view="edit", instance=target, locked_for_user=locked
+    )
+
+
 def _side_panels(request, source_page, target_page, locale):
-    """Wagtail's own side panels of the page editor: status, live preview and
-    checks. Comments are left out: they belong to Wagtail's edit form."""
-    panels = [
+    """Wagtail's own side panels of the editor: status (pages), live preview
+    and checks. Comments are left out: they belong to Wagtail's edit form."""
+    panels = []
+    if objects.is_previewable(target_page):
+        preview_url = objects.preview_url(source_page, locale)
+        panels.append(PreviewSidePanel(target_page, request, preview_url=preview_url))
+        panels.append(ChecksSidePanel(target_page, request))
+    if not objects.is_page(target_page):
+        return MediaContainer(panels)
+    panels.insert(
+        0,
         PageStatusSidePanel(
             target_page,
             request,
@@ -244,31 +294,35 @@ def _side_panels(request, source_page, target_page, locale):
                 for page in target_page.get_translations().select_related("locale")
             ],
             parent_page=target_page.get_parent(),
-        )
-    ]
-    if target_page.is_previewable():
-        preview_url = reverse(
-            "sidebyside:preview", args=[source_page.pk, locale.language_code]
-        )
-        panels.append(PreviewSidePanel(target_page, request, preview_url=preview_url))
-        panels.append(ChecksSidePanel(target_page, request))
+        ),
+    )
     return MediaContainer(panels)
 
 
-class TranslationPreview(PreviewOnEditView):
+class TranslationPreview(PreviewOnEdit):
     """Wagtail's live preview, fed by the translation form instead of the
-    page edit form: shows the translation as it would be saved."""
+    edit form: shows the translation as it would be saved."""
+
+    def get_source(self):
+        if "page_id" in self.kwargs:
+            return get_object_or_404(Page, pk=self.kwargs["page_id"]).specific
+        return objects.get_snippet(
+            self.kwargs["app_label"],
+            self.kwargs["model_name"],
+            unquote(self.kwargs["pk"]),
+        )
 
     def get_object(self):
-        source_page = get_object_or_404(Page, pk=self.kwargs["page_id"]).specific
+        source = self.get_source()
         locale = get_object_or_404(Locale, language_code=self.kwargs["locale_code"])
-        target_page = source_page.get_translation_or_none(locale)
-        if target_page is None:
+        target = source.get_translation_or_none(locale)
+        if target is None:
             raise Http404
-        if not target_page.permissions_for_user(self.request.user).can_edit():
+        target = objects.specific(target)
+        if not objects.can(self.request.user, target, "change"):
             raise PermissionDenied
-        self.source = source_page.get_latest_revision_as_object()
-        return target_page.specific.get_latest_revision_as_object()
+        self.source = objects.latest(source)
+        return objects.latest(target)
 
     def get_form(self, query_dict):
         return _PreviewForm(self.source, self.object, query_dict)
@@ -316,7 +370,7 @@ def ai_check(request):
 
 
 def _create(request, source_page, locale):
-    if not source_page.permissions_for_user(request.user).can_edit():
+    if not objects.can(request.user, source_page, "change"):
         raise PermissionDenied
     if request.method == "POST":
         SyncTree.create_translations(source_page, request.user)
@@ -324,5 +378,9 @@ def _create(request, source_page, locale):
     return TemplateResponse(
         request,
         "sidebyside/create.html",
-        {"source_page": source_page, "locale": locale},
+        {
+            "source_page": source_page,
+            "title": objects.title(source_page),
+            "locale": locale,
+        },
     )

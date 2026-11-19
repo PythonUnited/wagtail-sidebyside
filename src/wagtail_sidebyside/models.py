@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel
@@ -8,16 +9,20 @@ from .panels import MachineTranslationStatusPanel
 
 
 class TranslationState(models.Model):
-    """Per translated page: the source text each unit was translated from.
+    """Per translation (page or snippet): the source text each unit was
+    translated from.
 
-    The translated text itself lives in the page (its own revisions). This only
-    tells us whether a unit is translated and whether its source changed since.
-    entries = {path: {"source": "<source text at translation time>"}}
+    The translated text itself lives in the object (its own revisions). This
+    only tells us whether a unit is translated and whether its source changed
+    since. entries = {path: {"source": "<source text at translation time>"}}
+    The object is a generic key (pages: content type Page): removed with it,
+    see signals.
     """
 
-    page = models.OneToOneField(
-        "wagtailcore.Page", on_delete=models.CASCADE, related_name="+"
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, related_name="+"
     )
+    object_id = models.CharField(max_length=255)
     entries = models.JSONField(default=dict)
     # Translated texts whose block was removed from the source, kept so they
     # are not silently lost: [{"label", "kind", "source", "text"}].
@@ -29,8 +34,16 @@ class TranslationState(models.Model):
 
     objects = TranslationStateManager()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["content_type", "object_id"],
+                name="sidebyside_translationstate_object",
+            )
+        ]
+
     def __str__(self):
-        return f"Translation state of page {self.page_id}"
+        return f"Translation state of {self.content_type} {self.object_id}"
 
 
 @register_setting(icon="globe")

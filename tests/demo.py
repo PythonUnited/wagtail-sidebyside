@@ -2,8 +2,8 @@
 
     uv run python -m tests.demo
 
-Creates tests/demo.sqlite3 with a few French pages and an English
-translation, then runs the server on http://localhost:8000/cms/ (admin/admin).
+Creates tests/demo.sqlite3 with a few French pages and a footer snippet,
+with their English translations, then runs the server on http://localhost:8000/cms/ (admin/admin).
 Machine translation uses a fake backend, no API key needed.
 """
 
@@ -19,7 +19,8 @@ BODY = [
     {
         "type": "rich_text",
         "value": "<p>Battez trois oeufs, ajoutez <b>beaucoup de fromage</b> "
-        "et faites cuire a feu doux.</p>",
+        "et faites cuire a feu doux. Voir aussi "
+        '<a href="https://fr.wikipedia.org/wiki/Omelette">l\'omelette</a>.</p>',
         "id": "r1",
     },
     {"type": "quote", "value": "Omelette du fromage", "id": "q1"},
@@ -32,7 +33,7 @@ def create_content():
     from wagtail.models import Locale, Page, Site
     from wagtail.users.models import UserProfile
 
-    from tests.testapp.models import TestPage
+    from tests.testapp.models import Footer, TestPage
     from wagtail_sidebyside.use_cases.sync_tree import SyncTree
     from wagtail_sidebyside.use_cases.translate_page import TranslatePage
 
@@ -41,8 +42,9 @@ def create_content():
     admin = get_user_model().objects.create_superuser(
         "admin", "admin@example.com", "admin"
     )
-    UserProfile.get_for_user(admin).preferred_language = "en"
-    UserProfile.get_for_user(admin).save()
+    profile = UserProfile.get_for_user(admin)
+    profile.preferred_language = "en"
+    profile.save()
     fr = Locale.objects.get_or_create(language_code="fr")[0]
     en = Locale.objects.get_or_create(language_code="en")[0]
     root = Page.get_first_root_node()
@@ -78,6 +80,14 @@ def create_content():
         instance=TestPage(title="Contact", slug="contact", locale=fr)
     )
     contact.save_revision().publish()
+
+    # A translated snippet: its English version is created along with it.
+    Footer.objects.create(
+        heading="Contact",
+        text="<p>Laboratoire du fromage, Paris</p>"
+        '<p><a href="mailto:fromage@example.com">fromage@example.com</a></p>',
+        locale=fr,
+    )
 
     # Translate some of the English pages, leave the rest to try (contact is
     # not started: it shows the French text).

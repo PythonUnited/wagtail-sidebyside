@@ -40,11 +40,11 @@ def _not_started(target):
 def test_status_not_started(pages):  # noqa: F811
     source, target = pages
     _not_started(target)
-    (status,) = PageStatus.for_page(source)
+    (status,) = PageStatus.for_object(source)
     assert status.state == NOT_STARTED and status.needs_work
 
     _save(source, target, {"title": "Home"})
-    (status,) = PageStatus.for_page(source)
+    (status,) = PageStatus.for_object(source)
     assert status.started and status.state != NOT_STARTED
 
 
@@ -57,7 +57,9 @@ def test_translation_without_state_counts_as_started(pages):  # noqa: F811
 def test_overview_filters(pages):  # noqa: F811
     source, target = pages
     _not_started(target)
-    ids = lambda show: [page.pk for page, _s in PageStatus.overview(show)]  # noqa: E731
+    ids = lambda show: [  # noqa: E731
+        row.source.pk for section in PageStatus.overview(show) for row in section.rows
+    ]
     assert source.pk in ids("all")
     assert source.pk in ids("work")
     assert source.pk not in ids("started")

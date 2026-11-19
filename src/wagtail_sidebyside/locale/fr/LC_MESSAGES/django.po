@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 02:47-0600\n"
+"POT-Creation-Date: 2026-11-19 10:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: action_menu.py:18
+#: action_menu.py:30
 msgid "Publish source and translation"
 msgstr "Publier la source et la traduction"
 
-#: action_menu.py:23
+#: action_menu.py:58
 msgid "Publish translation only"
 msgstr "Publier uniquement la traduction"
 
-#: models.py:39
+#: fields.py:354
+msgid "Column"
+msgstr "Colonne"
+
+#: fields.py:354
+msgid "Row"
+msgstr "Ligne"
+
+#: fields.py:354
+msgid "Caption"
+msgstr "Légende"
+
+#: models.py:52
 msgid "machine translation"
 msgstr "traduction automatique"
 
-#: models.py:41
+#: models.py:54
 msgid "Show the buttons to translate with AI."
 msgstr "Afficher les boutons pour traduire avec l'IA."
 
-#: models.py:44
+#: models.py:57
 msgid "glossary"
 msgstr "glossaire"
 
-#: models.py:47
+#: models.py:60
 msgid ""
 "Terms that must always be translated the same way, one per line, e.g. "
 "'fromage = cheese'. With more languages: 'fromage = en: cheese | nl: kaas'."
@@ -45,11 +57,11 @@ msgstr ""
 "Termes à traduire toujours de la même façon, un par ligne, p. ex. 'fromage ="
 " cheese'. Avec plusieurs langues : 'fromage = en: cheese | nl: kaas'."
 
-#: models.py:53
+#: models.py:66
 msgid "instructions"
 msgstr "instructions"
 
-#: models.py:56
+#: models.py:69
 msgid ""
 "Extra instructions for the AI that apply to the whole site, one per line. "
 "Fixed translations of terms go in the glossary. Examples: 'Use a formal, "
@@ -65,11 +77,11 @@ msgstr ""
 "British English spelling.' 'Keep product and place names as they are.' "
 "'Write dates as 17 October 2026.'"
 
-#: models.py:66
+#: models.py:79
 msgid "monthly budget (USD)"
 msgstr "budget mensuel (USD)"
 
-#: models.py:72
+#: models.py:85
 msgid ""
 "Estimated cost of machine translation per month. When it is reached, the AI "
 "buttons are hidden until next month. Empty = no limit. The real bill is in "
@@ -79,11 +91,11 @@ msgstr ""
 "boutons IA sont masqués jusqu'au mois suivant. Vide = pas de limite. La "
 "facture réelle est dans la console du fournisseur."
 
-#: models.py:79
+#: models.py:92
 msgid "Connection"
 msgstr "Connexion"
 
-#: models.py:87
+#: models.py:100
 msgid "translations"
 msgstr "traductions"
 
@@ -94,12 +106,12 @@ msgstr "Créer la traduction"
 #: templates/sidebyside/create.html:10
 #, python-format
 msgid ""
-"This page has no %(language)s version yet. It is created as a copy of the "
-"source page. Until you translate it, it shows the source text."
+"There is no %(language)s version yet. It is created as a copy of the source."
+" Until you translate it, it shows the source text."
 msgstr ""
-"Cette page n'a pas encore de traduction pour %(language)s. Elle est créée "
-"comme copie de la page source. Tant que vous ne la traduisez pas, elle "
-"affiche le texte source."
+"Il n'existe pas encore de version %(language)s. Elle est créée comme copie "
+"de la source. Tant que vous ne l'avez pas traduite, elle affiche le texte "
+"source."
 
 #: templates/sidebyside/create.html:18
 #, python-format
@@ -108,10 +120,10 @@ msgstr "Créer la traduction (%(language)s)"
 
 #: templates/sidebyside/dashboard_panel.html:3
 #, python-format
-msgid "%(counter)s page needs translation work"
-msgid_plural "%(counter)s pages need translation work"
-msgstr[0] "%(counter)s page à traduire"
-msgstr[1] "%(counter)s pages à traduire"
+msgid "%(counter)s item needs translation work"
+msgid_plural "%(counter)s items need translation work"
+msgstr[0] "%(counter)s élément à traduire"
+msgstr[1] "%(counter)s éléments à traduire"
 
 #: templates/sidebyside/dashboard_panel.html:19
 #: templates/sidebyside/includes/translation_bar.html:25
@@ -132,7 +144,7 @@ msgstr "Pas de document"
 
 #: templates/sidebyside/includes/translation_bar.html:4
 #: templates/sidebyside/overview.html:4 templates/sidebyside/overview.html:11
-#: wagtail_hooks.py:39
+#: wagtail_hooks.py:50
 msgid "Translations"
 msgstr "Traductions"
 
@@ -144,115 +156,109 @@ msgstr "Choisir une langue"
 msgid "Source"
 msgstr "Source"
 
-#: templates/sidebyside/overview.html:22
-msgid "Page"
-msgstr "Page"
-
 #: templates/sidebyside/overview.html:42
-msgid "All pages are translated."
-msgstr "Toutes les pages sont traduites."
+msgid "Everything is translated."
+msgstr "Tout est traduit."
 
 #: templates/sidebyside/translate.html:4
 #, python-format
 msgid "Translate %(title)s to %(language)s"
 msgstr "Traduire %(title)s (%(language)s)"
 
-#: templates/sidebyside/translate.html:29
+#: templates/sidebyside/translate.html:33
 #, python-format
 msgid "%(done)s of %(total)s translated"
 msgstr "%(done)s sur %(total)s traduits"
 
-#: templates/sidebyside/translate.html:33
+#: templates/sidebyside/translate.html:37 views.py:47
 msgid "All"
 msgstr "Tout"
 
-#: templates/sidebyside/translate.html:34
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:38
+#: templates/sidebyside/translate.html:165
 msgid "To do"
 msgstr "À faire"
 
-#: templates/sidebyside/translate.html:35
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:39
+#: templates/sidebyside/translate.html:165
 msgid "Outdated"
 msgstr "Obsolète"
 
-#: templates/sidebyside/translate.html:36
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:40
+#: templates/sidebyside/translate.html:165
 msgid "To review"
 msgstr "À vérifier"
 
-#: templates/sidebyside/translate.html:41
+#: templates/sidebyside/translate.html:45
 msgid "AI budget for this month is used up."
 msgstr "Le budget IA de ce mois est épuisé."
 
-#: templates/sidebyside/translate.html:44
-#: templates/sidebyside/translate.html:162
+#: templates/sidebyside/translate.html:48
+#: templates/sidebyside/translate.html:171
 msgid "Translating..."
 msgstr "Traduction en cours..."
 
-#: templates/sidebyside/translate.html:44
+#: templates/sidebyside/translate.html:48
 msgid "Translate empty fields with AI"
 msgstr "Traduire les champs vides avec l'IA"
 
-#: templates/sidebyside/translate.html:50
-msgid "This page is locked. You cannot save the translation."
-msgstr ""
-"Cette page est verrouillée. Vous ne pouvez pas enregistrer la traduction."
+#: templates/sidebyside/translate.html:54
+msgid "The translation is locked. You cannot save it."
+msgstr "La traduction est verrouillée. Vous ne pouvez pas l'enregistrer."
 
-#: templates/sidebyside/translate.html:53
+#: templates/sidebyside/translate.html:57
 msgid ""
-"The source page has unpublished changes. You are translating its latest "
-"draft. Use 'Publish source and translation' to put both live at once."
+"The source has unpublished changes. You are translating its latest draft. "
+"Use 'Publish source and translation' to put both live at once."
 msgstr ""
-"La page source a des modifications non publiées. Vous traduisez son dernier "
+"La source a des modifications non publiées. Vous traduisez son dernier "
 "brouillon. Utilisez « Publier la source et la traduction » pour mettre les "
 "deux en ligne en même temps."
 
-#: templates/sidebyside/translate.html:61
+#: templates/sidebyside/translate.html:65
 #, python-format
-msgid "%(counter)s %(language)s text has no counterpart in the source page."
+msgid "%(counter)s %(language)s text has no counterpart in the source."
 msgid_plural ""
-"%(counter)s %(language)s texts have no counterpart in the source page."
+"%(counter)s %(language)s texts have no counterpart in the source."
 msgstr[0] ""
-"%(counter)s texte (%(language)s) n'a pas d'équivalent dans la page source."
+"%(counter)s texte (%(language)s) n'a pas d'équivalent dans la source."
 msgstr[1] ""
-"%(counter)s textes (%(language)s) n'ont pas d'équivalent dans la page "
-"source."
+"%(counter)s textes (%(language)s) n'ont pas d'équivalent dans la source."
 
-#: templates/sidebyside/translate.html:66
+#: templates/sidebyside/translate.html:70
 msgid ""
-"The source page has changed (blocks removed or of another type). Saving "
-"moves these texts to 'Removed from the source' below. Until then, publishing"
-" the source does not publish this translation."
+"The source has changed (blocks removed or of another type). Saving moves "
+"these texts to 'Removed from the source' below. Until then, publishing the "
+"source does not publish this translation."
 msgstr ""
-"La page source a changé (blocs supprimés ou d'un autre type). "
-"L'enregistrement déplace ces textes vers « Retiré de la source » ci-dessous."
-" D'ici là, publier la source ne publie pas cette traduction."
+"La source a changé (blocs supprimés ou d'un autre type). L'enregistrement "
+"déplace ces textes vers « Supprimés de la source » ci-dessous. D'ici là, "
+"publier la source ne publie pas cette traduction."
 
-#: templates/sidebyside/translate.html:79
+#: templates/sidebyside/translate.html:83
 #, python-format
 msgid "Removed from the source: %(counter)s translated text"
 msgid_plural "Removed from the source: %(counter)s translated texts"
 msgstr[0] "Retiré de la source : %(counter)s texte traduit"
 msgstr[1] "Retiré de la source : %(counter)s textes traduits"
 
-#: templates/sidebyside/translate.html:85
+#: templates/sidebyside/translate.html:89
 msgid ""
-"Their block was removed from the source page. If a block with the same "
-"source text comes back, its translation is filled in again."
+"Their block was removed from the source. If a block with the same source "
+"text comes back, its translation is filled in again."
 msgstr ""
-"Le bloc a été retiré de la page source. Si un bloc avec le même texte source"
-" revient, sa traduction est à nouveau remplie."
+"Leur bloc a été supprimé de la source. Si un bloc avec le même texte source "
+"revient, sa traduction est de nouveau remplie."
 
-#: templates/sidebyside/translate.html:90
+#: templates/sidebyside/translate.html:94
 msgid "Discard"
 msgstr "Supprimer"
 
-#: templates/sidebyside/translate.html:110
+#: templates/sidebyside/translate.html:119
 msgid "Metadata"
 msgstr "Métadonnées"
 
-#: templates/sidebyside/translate.html:111
+#: templates/sidebyside/translate.html:120
 msgid ""
 "The web address and what search engines show: the slug is the last part of "
 "the address, the title tag and meta description appear in search results."
@@ -261,84 +267,84 @@ msgstr ""
 "dernière partie de l'adresse, la balise titre et la méta-description "
 "apparaissent dans les résultats de recherche."
 
-#: templates/sidebyside/translate.html:115
+#: templates/sidebyside/translate.html:124
 msgid "Content"
 msgstr "Contenu"
 
-#: templates/sidebyside/translate.html:122
+#: templates/sidebyside/translate.html:131
 msgid "no text, copied from source"
 msgstr "pas de texte, copié de la source"
 
-#: templates/sidebyside/translate.html:128
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:137
+#: templates/sidebyside/translate.html:165
 msgid "Same as source"
 msgstr "Identique à la source"
 
-#: templates/sidebyside/translate.html:128
+#: templates/sidebyside/translate.html:137
 msgid "Different image"
 msgstr "Autre image"
 
-#: templates/sidebyside/translate.html:128
+#: templates/sidebyside/translate.html:137
 msgid "Different document"
 msgstr "Autre document"
 
-#: templates/sidebyside/translate.html:139
+#: templates/sidebyside/translate.html:148
 msgid "Use a different image in this language"
 msgstr "Utiliser une autre image dans cette langue"
 
-#: templates/sidebyside/translate.html:139
+#: templates/sidebyside/translate.html:148
 msgid "Use a different document in this language"
 msgstr "Utiliser un autre document dans cette langue"
 
-#: templates/sidebyside/translate.html:153
+#: templates/sidebyside/translate.html:162
 msgid "AI, not saved"
 msgstr "IA, non enregistré"
 
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:165
 msgid "Empty in source"
 msgstr "Vide dans la source"
 
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:165
 msgid "Previous translation, to review"
 msgstr "Traduction précédente, à vérifier"
 
-#: templates/sidebyside/translate.html:156
+#: templates/sidebyside/translate.html:165
 msgid "Done"
 msgstr "Terminé"
 
-#: templates/sidebyside/translate.html:160
+#: templates/sidebyside/translate.html:169
 msgid "Copy the source text into the translation"
 msgstr "Copier le texte source dans la traduction"
 
-#: templates/sidebyside/translate.html:162
+#: templates/sidebyside/translate.html:171
 msgid "Translate this field with AI"
 msgstr "Traduire ce champ avec l'IA"
 
-#: templates/sidebyside/translate.html:185
+#: templates/sidebyside/translate.html:195
 msgid "Empty in the source"
 msgstr "Vide dans la source"
 
-#: templates/sidebyside/translate.html:188
+#: templates/sidebyside/translate.html:199
 msgid "Source text is used"
 msgstr "Le texte source est utilisé"
 
-#: templates/sidebyside/translate.html:195
+#: templates/sidebyside/translate.html:206
 msgid "Source changed:"
 msgstr "Source modifiée :"
 
-#: templates/sidebyside/translate.html:199
+#: templates/sidebyside/translate.html:210
 msgid "Translation is still correct"
 msgstr "La traduction est toujours correcte"
 
-#: templates/sidebyside/translate.html:206
+#: templates/sidebyside/translate.html:217
 msgid "Same in both languages (keep the source text)"
 msgstr "Identique dans les deux langues (garder le texte source)"
 
-#: templates/sidebyside/translate.html:212
+#: templates/sidebyside/translate.html:223
 msgid "Checked: the translation is correct"
 msgstr "Vérifié : la traduction est correcte"
 
-#: templates/sidebyside/translate.html:222
+#: templates/sidebyside/translate.html:233
 msgid "Actions (footer)"
 msgstr "Actions (pied de page)"
 
@@ -539,54 +545,54 @@ msgstr "La traduction automatique a échoué."
 msgid "The machine translation budget for this month is used up."
 msgstr "Le budget de traduction automatique de ce mois est épuisé."
 
-#: use_cases/page_status.py:48
+#: use_cases/page_status.py:49
 msgid "Not created"
 msgstr "Non créée"
 
-#: use_cases/page_status.py:50
+#: use_cases/page_status.py:51
 msgid "Not started"
 msgstr "Pas commencée"
 
-#: use_cases/page_status.py:53
+#: use_cases/page_status.py:54
 #, python-format
 msgid "%(count)s outdated"
 msgstr "%(count)s obsolète(s)"
 
-#: use_cases/page_status.py:55
+#: use_cases/page_status.py:56
 #, python-format
 msgid "%(count)s to do"
 msgstr "%(count)s à faire"
 
-#: use_cases/page_status.py:57
+#: use_cases/page_status.py:58
 #, python-format
 msgid "%(count)s to review"
 msgstr "%(count)s à vérifier"
 
-#: use_cases/page_status.py:58
+#: use_cases/page_status.py:59
 msgid "Translated"
 msgstr "Traduite"
 
-#: views.py:45
-msgid "All pages"
-msgstr "Toutes les pages"
+#: use_cases/page_status.py:142
+msgid "Pages"
+msgstr "Pages"
 
-#: views.py:46
-msgid "Pages with work"
-msgstr "Pages à traiter"
+#: views.py:48
+msgid "Needs work"
+msgstr "À traiter"
 
-#: views.py:47
-msgid "Started translations with work"
-msgstr "Traductions commencées à traiter"
+#: views.py:50
+msgid "In progress"
+msgstr "En cours"
 
-#: views.py:106
+#: views.py:118
 msgid "The source page is not published yet. Publish both together."
 msgstr "La page source n'est pas encore publiée. Publiez les deux ensemble."
 
-#: views.py:141
+#: views.py:153
 msgid "Source and translation published."
 msgstr "Source et traduction publiées."
 
-#: views.py:146
+#: views.py:158
 msgid ""
 "Translation published. What it takes over from the source's unpublished "
 "changes follows when the source is published."
@@ -594,19 +600,23 @@ msgstr ""
 "Traduction publiée. Ce qu'elle reprend des modifications non publiées de la "
 "source suivra quand la source sera publiée."
 
-#: views.py:152
+#: views.py:164
 msgid "Translation published."
 msgstr "Traduction publiée."
 
-#: views.py:154
+#: views.py:166
 msgid "Translation saved as draft."
 msgstr "Traduction enregistrée comme brouillon."
 
-#: views.py:215
+#: views.py:168
+msgid "Translation saved."
+msgstr "Traduction enregistrée."
+
+#: views.py:233
 msgid "Nothing to translate."
 msgstr "Rien à traduire."
 
-#: views.py:220
+#: views.py:238
 #, python-format
 msgid "%(count)s field translated by AI. Check it, then save."
 msgid_plural "%(count)s fields translated by AI. Check them, then save."
@@ -614,18 +624,18 @@ msgstr[0] "%(count)s champ traduit par l'IA. Vérifiez-le, puis enregistrez."
 msgstr[1] ""
 "%(count)s champs traduits par l'IA. Vérifiez-les, puis enregistrez."
 
-#: views.py:313
+#: views.py:367
 msgid "Connection works."
 msgstr "La connexion fonctionne."
 
-#: wagtail_hooks.py:66
+#: wagtail_hooks.py:77
 #, python-format
 msgid "Create pages in %(language)s. Translations are created automatically."
 msgstr ""
 "Créez les pages dans la langue principale (%(language)s). Les traductions "
 "sont créées automatiquement."
 
-#: wagtail_hooks.py:73
+#: wagtail_hooks.py:84
 #, python-format
 msgid ""
 "Pages are created in %(language)s, so you are now adding it there. The "
@@ -634,7 +644,7 @@ msgstr ""
 "Les pages sont créées en %(language)s : vous l'ajoutez donc là. La "
 "traduction est créée automatiquement."
 
-#: wagtail_hooks.py:102
+#: wagtail_hooks.py:113
 #, python-format
 msgid ""
 "'%(title)s' is a translation. Move or delete the %(language)s page instead: "
@@ -643,21 +653,44 @@ msgstr ""
 "'%(title)s' est une traduction. Déplacez ou supprimez plutôt la page source "
 "(%(language)s) : ses traductions suivent."
 
-#: wagtail_hooks.py:112
+#: wagtail_hooks.py:116
 #, python-format
 msgid "Go to the %(language)s page"
 msgstr "Aller à la page source (%(language)s)"
 
-#: wagtail_hooks.py:167
+#: wagtail_hooks.py:119
+#, python-format
+msgid ""
+"'%(title)s' is a translation. Delete the %(language)s version instead: its "
+"translations follow."
+msgstr ""
+"« %(title)s » est une traduction. Supprimez plutôt la version %(language)s :"
+" ses traductions suivent."
+
+#: wagtail_hooks.py:122
+#, python-format
+msgid "Go to the %(language)s version"
+msgstr "Aller à la version %(language)s"
+
+#: wagtail_hooks.py:173
+#, python-format
+msgid ""
+"This is created in %(language)s, so you are now adding it there. The "
+"translations are created automatically."
+msgstr ""
+"Ceci se crée en %(language)s, vous l'ajoutez donc maintenant dans cette "
+"langue. Les traductions sont créées automatiquement."
+
+#: wagtail_hooks.py:199 wagtail_hooks.py:233
 #, python-format
 msgid "Translate: %(language)s"
 msgstr "Traduire : %(language)s"
 
-#: wagtail_hooks.py:182
+#: wagtail_hooks.py:248
 #, python-format
 msgid "%(language)s translation: %(status)s."
 msgstr "Traduction (%(language)s) : %(status)s."
 
-#: wagtail_hooks.py:187
+#: wagtail_hooks.py:253
 msgid "Translate"
 msgstr "Traduire"

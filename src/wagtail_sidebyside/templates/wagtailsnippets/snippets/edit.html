@@ -1,0 +1,13 @@
+{% extends "wagtailsnippets/snippets/edit.html" %}
+{% load sidebyside_tags %}
+{% comment %}
+Adds the row with translation buttons above the form of a translated snippet,
+as in the page editor. Extends Wagtail's own template (recursive extends), so
+only this block is ours. If Wagtail renames the block, the row disappears;
+nothing breaks.
+{% endcomment %}
+
+{% block before_form %}
+    {% translation_bar object %}
+    {{ block.super }}
+{% endblock %}

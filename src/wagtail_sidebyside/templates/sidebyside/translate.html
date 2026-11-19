@@ -1,19 +1,23 @@
 {% extends "wagtailadmin/base.html" %}
-{% load i18n static wagtailadmin_tags wagtailcore_tags sidebyside_tags %}
+{% load i18n static wagtailadmin_tags sidebyside_tags %}
 
-{% block titletag %}{% blocktrans trimmed with title=source_page.title language=locale.get_display_name %}Translate {{ title }} to {{ language }}{% endblocktrans %}{% endblock %}
+{% block titletag %}{% blocktrans trimmed with title=title language=locale.get_display_name %}Translate {{ title }} to {{ language }}{% endblocktrans %}{% endblock %}
 
 {% block bodyclass %}editor-view{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-    {{ form.media.css }}
+    {{ media.css }}
     {{ action_menu.media.css }}
     {{ side_panels.media.css }}
 {% endblock %}
 
 {% block content %}
-    {% include "wagtailadmin/shared/headers/page_edit_header.html" with title=target_page.title page=target_page page_for_status=target_page side_panels=side_panels history_url=history_url %}
+    {% if is_page %}
+        {% include "wagtailadmin/shared/headers/page_edit_header.html" with title=title page=target_page page_for_status=target_page side_panels=side_panels history_url=history_url %}
+    {% else %}
+        {% include "wagtailadmin/shared/headers/slim_header.html" with title=title breadcrumbs_items=breadcrumbs_items side_panels=side_panels history_url=history_url %}
+    {% endif %}
     {% translation_bar source_page locale %}
 
     <form method="post" class="sbs" data-sbs-form data-edit-form novalidate
@@ -47,10 +51,10 @@
         </div>
 
         {% if locked %}
-            <p class="help-block help-warning">{% icon name="lock" classname="sbs-icon" %} {% trans "This page is locked. You cannot save the translation." %}</p>
+            <p class="help-block help-warning">{% icon name="lock" classname="sbs-icon" %} {% trans "The translation is locked. You cannot save it." %}</p>
         {% endif %}
-        {% if source_page.has_unpublished_changes %}
-            <p class="help-block help-warning">{% icon name="warning" classname="sbs-icon" %} {% trans "The source page has unpublished changes. You are translating its latest draft. Use 'Publish source and translation' to put both live at once." %}</p>
+        {% if source_pending %}
+            <p class="help-block help-warning">{% icon name="warning" classname="sbs-icon" %} {% trans "The source has unpublished changes. You are translating its latest draft. Use 'Publish source and translation' to put both live at once." %}</p>
         {% endif %}
         {% if form.non_field_errors %}
             <div class="help-block help-critical">{{ form.non_field_errors }}</div>
@@ -59,15 +63,15 @@
         {% if orphans %}
             <div class="sbs-orphans">
                 <p><strong>{% icon name="warning" classname="sbs-icon" %} {% blocktrans trimmed with language=locale.get_display_name count counter=orphans|length %}
-                    {{ counter }} {{ language }} text has no counterpart in the source page.
+                    {{ counter }} {{ language }} text has no counterpart in the source.
                 {% plural %}
-                    {{ counter }} {{ language }} texts have no counterpart in the source page.
+                    {{ counter }} {{ language }} texts have no counterpart in the source.
                 {% endblocktrans %}</strong>
-                {% trans "The source page has changed (blocks removed or of another type). Saving moves these texts to 'Removed from the source' below. Until then, publishing the source does not publish this translation." %}</p>
+                {% trans "The source has changed (blocks removed or of another type). Saving moves these texts to 'Removed from the source' below. Until then, publishing the source does not publish this translation." %}</p>
                 {% for unit in orphans %}
                     <details>
                         <summary>{{ unit.label }}</summary>
-                        {% if unit.kind == "richtext" %}<div class="sbs-richtext">{{ unit.source|richtext }}</div>{% else %}<p>{{ unit.source|linebreaksbr }}</p>{% endif %}
+                        {% if unit.kind == "richtext" %}<div class="sbs-readonly">{% readonly_richtext unit.source unit.features %}</div>{% else %}<p>{{ unit.source|linebreaksbr }}</p>{% endif %}
                     </details>
                 {% endfor %}
             </div>
@@ -82,7 +86,7 @@
                         Removed from the source: {{ counter }} translated texts
                     {% endblocktrans %}
                 </summary>
-                <p class="help">{% trans "Their block was removed from the source page. If a block with the same source text comes back, its translation is filled in again." %}</p>
+                <p class="help">{% trans "Their block was removed from the source. If a block with the same source text comes back, its translation is filled in again." %}</p>
                 {% for item in removed %}
                     <div class="sbs-removed__item">
                         <div class="sbs-removed__head">
@@ -90,8 +94,13 @@
                             <button type="submit" name="discard" value="{{ forloop.counter0 }}" class="sbs-icon-button" formnovalidate>{% icon name="bin" classname="sbs-icon" %} {% trans "Discard" %}</button>
                         </div>
                         <div class="sbs-columns">
-                            <div class="sbs-source">{% if item.kind == "richtext" %}{{ item.source|richtext }}{% else %}{{ item.source|default:"-"|linebreaksbr }}{% endif %}</div>
-                            <div class="sbs-source">{% if item.kind == "richtext" %}{{ item.text|richtext }}{% else %}{{ item.text|linebreaksbr }}{% endif %}</div>
+                            {% if item.kind == "richtext" %}
+                                <div class="sbs-readonly">{% readonly_richtext item.source %}</div>
+                                <div class="sbs-readonly">{% readonly_richtext item.text %}</div>
+                            {% else %}
+                                <div class="sbs-source">{{ item.source|default:"-"|linebreaksbr }}</div>
+                                <div class="sbs-source">{{ item.text|linebreaksbr }}</div>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -174,17 +183,19 @@
                             <input type="hidden" name="copied:{{ row.unit.path }}" value="{{ copied_text }}">
                         {% endif %}
                         <div class="sbs-columns">
-                            <div class="sbs-source{% if not row.unit.source %} sbs-source--empty{% endif %}">
-                                {% if row.unit.kind == "richtext" %}
-                                    <div class="sbs-richtext">{{ row.unit.source|richtext }}</div>
-                                {% elif row.unit.kind == "html" %}
-                                    <pre class="sbs-code">{{ row.unit.source }}</pre>
-                                {% elif row.unit.source %}
-                                    {{ row.unit.source|linebreaksbr }}
-                                {% else %}
-                                    <span class="sbs-source__empty">{% trans "Empty in the source" %}</span>
-                                {% endif %}
-                            </div>
+                            {% if row.unit.kind == "richtext" and row.unit.source %}
+                                <div class="sbs-readonly">{% readonly_richtext row.unit.source row.unit.features %}</div>
+                            {% else %}
+                                <div class="sbs-source{% if not row.unit.source %} sbs-source--empty{% endif %}">
+                                    {% if row.unit.kind == "html" %}
+                                        <pre class="sbs-code">{{ row.unit.source }}</pre>
+                                    {% elif row.unit.source %}
+                                        {{ row.unit.source|linebreaksbr }}
+                                    {% else %}
+                                        <span class="sbs-source__empty">{% trans "Empty in the source" %}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                             <div class="sbs-target" data-sbs-same-label="{% trans 'Source text is used' %}"{% if row.unit.path == "slug" %} data-sbs-slug{% elif row.unit.path == "title" %} data-sbs-title{% endif %}>
                                 {{ field }}
                                 {{ field.errors }}
@@ -228,7 +239,7 @@
 
 {% block extra_js %}
     {{ block.super }}
-    {{ form.media.js }}
+    {{ media.js }}
     {{ action_menu.media.js }}
     {{ side_panels.media.js }}
     {# defer: Wagtail renders this block above the page content. #}

@@ -7,8 +7,9 @@ from dataclasses import dataclass
 from django.db import transaction
 from django.utils.html import strip_tags
 from wagtail import hooks
-from wagtail.models import Page
+from wagtail.models import RevisionMixin
 
+from .. import objects
 from ..conf import source_locale
 from ..fields import (
     CHOOSER_KINDS,
@@ -45,18 +46,19 @@ class Row:
 
 class TranslatePage:
     @staticmethod
-    def source_of(page: Page) -> Page | None:
-        """The page in the source locale this page is a translation of, or
-        None if page is itself a source page or has no source."""
+    def source_of(obj):
+        """The page or snippet in the source locale obj is a translation of,
+        or None if obj is itself a source or has no source."""
         locale = source_locale()
-        if page.locale_id == locale.id:
+        if obj.locale_id == locale.id:
             return None
-        return page.get_translation_or_none(locale)
+        return obj.get_translation_or_none(locale)
 
     @staticmethod
-    def rows(source: Page, target: Page) -> list[Row]:
+    def rows(source, target) -> list[Row]:
         """One row per source unit with its translation status. source and
-        target are the latest revisions of the (specific) pages."""
+        target are the latest versions (objects.latest) of the (specific)
+        pages or snippets."""
         units = page_units(source)
         translations = page_texts(target, align_to=source)
         entries = TranslatePage._entries(units, translations, source, target)
@@ -103,8 +105,8 @@ class TranslatePage:
 
     @staticmethod
     def save(
-        source: Page,
-        target: Page,
+        source,
+        target,
         rows: list[Row],
         values: dict[str, str],
         changed: set[str],
@@ -114,10 +116,12 @@ class TranslatePage:
         publish: bool,
         same: frozenset[str] = frozenset(),
         copied: frozenset[str] = frozenset(),
-        live_source: Page | None = None,
+        live_source=None,
         awaiting_source: bool = False,
     ):
-        """Save target as a new revision of source with the given translations.
+        """Save target as a new version of source with the given translations
+        (see objects.save). Returns the revision, None for a snippet without
+        revisions.
 
         A translation is never ahead of its source. With publish and
         live_source (the published version of a source that has a newer
@@ -173,16 +177,15 @@ class TranslatePage:
         with transaction.atomic():
             if publish and live_source is not None:
                 apply_translations(live_source, target, translations)
-                target.save_revision(user=user, log_action=True).publish(user=user)
+                objects.save(target, user, publish=True)
+                objects.reload_state(target)
                 awaiting_source = True
                 publish = False
             apply_translations(source, target, translations)
-            revision = target.save_revision(user=user, log_action=True)
+            revision = objects.save(target, user, publish)
             TranslationState.objects.store(
                 target, new_entries, removed, awaiting_source
             )
-            if publish:
-                revision.publish(user=user)
         return revision
 
     @staticmethod
@@ -204,27 +207,27 @@ class TranslatePage:
         }
 
     @staticmethod
-    def preview(source: Page, target: Page, rows: list[Row], values, same) -> Page:
+    def preview(source, target, rows: list[Row], values, same):
         """target with the given translations applied, not saved."""
         return apply_translations(
             source, target, TranslatePage.translations(rows, values, same)
         )
 
     @staticmethod
-    def removed(target: Page) -> list[dict]:
+    def removed(target) -> list[dict]:
         """Translated texts whose block was removed from the source."""
-        state = TranslationState.objects.for_page(target)
+        state = TranslationState.objects.for_object(target)
         return state.removed if state else []
 
     @staticmethod
-    def discard_removed(target: Page, index: int):
-        state = TranslationState.objects.for_page(target)
+    def discard_removed(target, index: int):
+        state = TranslationState.objects.for_object(target)
         if state and 0 <= index < len(state.removed):
             del state.removed[index]
             state.save(update_fields=["removed", "updated_at"])
 
     @staticmethod
-    def _reusable(target: Page) -> dict[str, dict]:
+    def _reusable(target) -> dict[str, dict]:
         """Removed translations by their (normalised) source text: a block
         with that source text again (put back, cut and pasted) gets it."""
         return {
@@ -255,7 +258,7 @@ class TranslatePage:
         return [item for item in removed if _normalise(item["source"]) not in reused]
 
     @staticmethod
-    def orphans(source: Page, target: Page) -> list[Unit]:
+    def orphans(source, target) -> list[Unit]:
         """Texts of target without a counterpart in source (blocks the source
         no longer has, or of another type). Saving the translation removes
         them, so they are shown to the editor and block automatic publishing."""
@@ -295,7 +298,7 @@ class TranslatePage:
         """Stored entries, or for a page translated before this app existed
         (e.g. with wagtail-localize) a baseline: a unit counts as translated
         from the current source if its text looks like a translation."""
-        state = TranslationState.objects.for_page(target)
+        state = TranslationState.objects.for_object(target)
         if state is not None:
             return state.entries
         history = TranslatePage._source_history(source)
@@ -325,8 +328,11 @@ class TranslatePage:
 
     @staticmethod
     def _source_history(source) -> set[str]:
-        """All texts in the last revisions of the source page, normalised."""
+        """All texts in the last revisions of the source, normalised. A
+        snippet without revisions has no history."""
         texts = set()
+        if not isinstance(source, RevisionMixin):
+            return texts
 
         def collect(value):
             if isinstance(value, dict):

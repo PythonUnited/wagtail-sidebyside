@@ -8,8 +8,17 @@ PHRASES = {
     "Bienvenue au laboratoire": "Welcome to the laboratory",
     "Recettes": "Recipes",
     "<p>Battez trois oeufs, ajoutez <b>beaucoup de fromage</b> et faites cuire "
-    "a feu doux.</p>": "<p>Beat three eggs, add <b>lots of cheese</b> and cook "
-    "over a low heat.</p>",
+    "a feu doux. Voir aussi "
+    '<a href="https://fr.wikipedia.org/wiki/Omelette">l\'omelette</a>.</p>': (
+        "<p>Beat three eggs, add <b>lots of cheese</b> and cook over a low heat. "
+        'See also <a href="https://en.wikipedia.org/wiki/Omelette">the omelette</a>.'
+        "</p>"
+    ),
+    "<p>Laboratoire du fromage, Paris</p>"
+    '<p><a href="mailto:fromage@example.com">fromage@example.com</a></p>': (
+        "<p>Cheese laboratory, Paris</p>"
+        '<p><a href="mailto:fromage@example.com">fromage@example.com</a></p>'
+    ),
 }
 
 

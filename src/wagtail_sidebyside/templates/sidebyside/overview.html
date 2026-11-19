@@ -15,31 +15,31 @@
                 <a class="button button-small{% if value != show %} button-secondary{% endif %}" href="?show={{ value }}"{% if value == show %} aria-current="true"{% endif %}>{{ label }}</a>
             {% endfor %}
         </p>
-        {% if rows %}
+        {% if sections %}
             <table class="sbs-overview">
-                <thead>
-                    <tr>
-                        <th>{% trans "Page" %}</th>
-                        {% for locale in locales %}<th>{{ locale.get_display_name }}</th>{% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for page, indent, statuses in rows %}
+                {% for section in sections %}
+                    <tbody>
                         <tr>
-                            <td style="padding-inline-start: {{ indent }}.5rem">
-                                <a href="{% url 'wagtailadmin_pages:edit' page.pk %}">{{ page.get_admin_display_title }}</a>
-                            </td>
-                            {% for status in statuses %}
-                                <td>
-                                    <a class="sbs-badge sbs-badge--{{ status.state }}" href="{{ status.url }}">{{ status.label }}</a>
-                                </td>
-                            {% endfor %}
+                            <th>{{ section.heading }}</th>
+                            {% for locale in locales %}<th>{{ locale.get_display_name }}</th>{% endfor %}
                         </tr>
-                    {% endfor %}
-                </tbody>
+                        {% for row in section.rows %}
+                            <tr>
+                                <td style="padding-inline-start: {{ row.indent }}.5rem">
+                                    <a href="{{ row.url }}">{{ row.title }}</a>
+                                </td>
+                                {% for status in row.statuses %}
+                                    <td>
+                                        <a class="sbs-badge sbs-badge--{{ status.state }}" href="{{ status.url }}">{{ status.label }}</a>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endfor %}
             </table>
         {% else %}
-            <p>{% trans "All pages are translated." %}</p>
+            <p>{% trans "Everything is translated." %}</p>
         {% endif %}
     </div>
 {% endblock %}

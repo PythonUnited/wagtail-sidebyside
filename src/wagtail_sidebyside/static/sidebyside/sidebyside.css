@@ -27,7 +27,7 @@
 /* Too narrow for two columns: source above translation. */
 @container (max-width: 40rem) {
     .sbs-columns {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 0.5rem;
     }
 
@@ -68,9 +68,11 @@
     color: var(--w-color-text-button);
 }
 
+/* minmax(0, ...): a column may shrink below its content's width (a long URL,
+   code), instead of pushing the page wider than the screen. */
 .sbs-columns {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 1.5rem;
 }
 
@@ -120,30 +122,23 @@
     overflow-wrap: anywhere;
 }
 
-.sbs-richtext > :first-child {
-    margin-top: 0;
+/* Rich text in the source column: a read-only editor, so it looks exactly
+   like the translation's editor next to it (link types, anchors, images).
+   Grey like the other source fields, but not faded and not blocked as
+   Wagtail shows a read-only editor: the text can be selected and copied,
+   and clicking a link shows where it goes (without Edit and Remove). */
+.sbs-readonly .Draftail-Editor--readonly {
+    background: var(--w-color-surface-field-inactive);
+    pointer-events: auto;
 }
 
-.sbs-richtext > :last-child {
-    margin-bottom: 0;
+.sbs-readonly .Draftail-Editor--readonly .DraftEditor-editorContainer {
+    opacity: 1;
 }
 
-/* Wagtail's admin CSS resets lists; show them as in the editor. */
-.sbs-source :is(ul, ol) {
-    margin: 0.5em 0;
-    padding-inline-start: 1.5em;
-}
-
-.sbs-source ul {
-    list-style: disc;
-}
-
-.sbs-source ol {
-    list-style: decimal;
-}
-
-.sbs-source li {
-    list-style: inherit;
+.sbs-readonly .Draftail-Editor--readonly .DraftEditor-editorContainer::before,
+.sbs-readonly .Tooltip__button {
+    display: none;
 }
 
 .sbs-code {
@@ -190,17 +185,6 @@
     display: none;
 }
 
-@media (max-width: 50em) {
-    .sbs-columns {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
-
-    .sbs-columns--head {
-        display: none;
-    }
-}
-
 
 a.sbs-badge {
     text-decoration: none;
@@ -220,6 +204,11 @@ a.sbs-badge:hover {
 .sbs-overview {
     width: 100%;
     border-collapse: collapse;
+}
+
+/* Pages, then the snippets per model: one table, so the columns line up. */
+.sbs-overview tbody + tbody th {
+    padding-top: 1.5rem;
 }
 
 
@@ -521,8 +510,21 @@ a.sbs-badge:hover {
 /* Status badge and action buttons in a panel header: one row, same height. */
 .sbs-controls {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     align-items: center;
+}
+
+/* Wagtail keeps a panel heading on one line and does not let it shrink, so on
+   a narrow screen a long label ("Body > Columns 1 > Rich text") pushes the
+   buttons out of view. Wrap instead: the buttons move to the next line. */
+.sbs-row .w-panel__header {
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+}
+
+.sbs-row .w-panel__heading {
+    white-space: normal;
 }
 
 .sbs-controls .sbs-badge,
