@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 (2026-11-19)
+
+- After AI translation, "Checked: the translation is correct" is shown right
+  away: check and save once, instead of saving, checking and saving again.
+
 ## 0.3.0 (2026-11-19)
 
 - Snippets: models with `TranslatableMixin` registered as a snippet are

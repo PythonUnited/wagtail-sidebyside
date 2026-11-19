@@ -217,7 +217,8 @@
                                 {% trans "Same in both languages (keep the source text)" %}
                             </label>
                         {% endif %}
-                        {% if row.status == "review" and machine_text is None %}
+                        {# Also right after AI: check it and save once. An outdated row has its own confirm above. #}
+                        {% if row.status == "review" or machine_text is not None and row.status != "outdated" %}
                             <label class="sbs-confirm">
                                 <input type="checkbox" name="confirm" value="{{ row.unit.path }}">
                                 {% trans "Checked: the translation is correct" %}

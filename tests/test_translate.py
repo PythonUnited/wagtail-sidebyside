@@ -397,6 +397,24 @@ class TestMachineTranslationView:
         client.force_login(user)
         return client
 
+    def test_ai_then_check_and_save_once(self, client, pages, fake_ai):
+        source, target = pages
+        url = reverse("sidebyside:translate", args=[source.pk, "en"])
+
+        html = client.post(url, {"ai": "body.h1"}).content.decode()
+        assert 'name="confirm" value="body.h1"' in html
+
+        client.post(
+            url,
+            {
+                "body.h1": "EN:Omelette du fromage",
+                "machine:body.h1": "EN:Omelette du fromage",
+                "confirm": "body.h1",
+            },
+        )
+        statuses = {row.unit.path: row.status for row in _rows(source, target)}
+        assert statuses["body.h1"] == DONE
+
     def test_translate_all_then_save_marks_review_then_confirm(
         self, client, pages, fake_ai
     ):
